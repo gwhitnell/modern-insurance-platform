@@ -1,15 +1,9 @@
-Welcome to your new dbt project!
+# modern-insurance-platform
+Using DBT and Snowflake to build a sample modern insurance platform for learning purposes
 
-### Using the starter project
+Resources:
 
-Try running the following commands:
-- dbt run
-- dbt test
+DBT - For this demonstration we will be using DBT core as it is free in combination with snowflake
+https://docs.getdbt.com/docs/core/connect-data-platform/snowflake-setup
 
-
-### Resources:
-- Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
-- Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
-- Join the [chat](https://community.getdbt.com/) on Slack for live discussions and support
-- Find [dbt events](https://events.getdbt.com) near you
-- Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
+Snowflake - Instructions on getting setup on free trial
