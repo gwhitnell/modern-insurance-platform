@@ -1,0 +1,6 @@
+models:
+  - name: dim_customer
+    description: "Customer dimension (deduplicated)."
+    columns:
+      - name: customer_nk
+        tests: [not_null, unique]

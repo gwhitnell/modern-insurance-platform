@@ -1,0 +1,58 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: "Staged customers with light cleanup and type casting from RAW.CUSTOMERS."
+    columns:
+      - name: customer_id
+        description: "Customer identifier from source system."
+        tests:
+          - not_null
+
+      - name: email
+        description: "Normalised email address (lowercase, trimmed)."
+
+      - name: created_at_ts
+        description: "Parsed customer created timestamp from mixed raw formats."
+
+      - name: date_of_birth
+        description: "Parsed date of birth from mixed raw formats."
+
+  - name: stg_policies
+    description: "Staged policies with type casting from RAW.POLICIES."
+    columns:
+      - name: policy_id
+        tests: [not_null]
+      - name: customer_id
+        tests: [not_null]
+      - name: policy_status
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["ACTIVE", "CANCELLED", "LAPSED"]
+  
+  - name: stg_business_events
+    description: "Staged business events with parsing and normalisation from RAW.BUSINESS_EVENTS."
+    columns:
+      - name: event_id
+        tests: [not_null]
+      - name: policy_id
+        tests: [not_null]
+      - name: event_type
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["quote", "new_business", "mta", "renewal", "cancellation", "lapse"]
+
+  - name: stg_claims
+    description: "Staged claims with parsing and normalization from RAW.CLAIMS."
+    columns:
+      - name: claim_id
+        tests: [not_null]
+      - name: policy_id
+        tests: [not_null]
+      - name: claim_status
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["OPEN", "CLOSED", "REJECTED"]

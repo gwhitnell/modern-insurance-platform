@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: raw
+    database: DEV_MODERN_INSURANCE_PLATFORM
+    schema: RAW
+    tables:
+      - name: CUSTOMERS
+        description: "Raw customer records from CRM; intentionally messy types and duplicates."
+      - name: POLICIES
+        description: "Raw policy records from policy admin system; dates and premium stored as strings."
+      - name: CLAIMS
+        description: "Raw claims data from claims system; amounts stored as strings."
+      - name: BUSINESS_EVENTS
+        description: "Raw business event stream (quote, new business, mid term adjustment, renewal, cancellation, lapse)."
