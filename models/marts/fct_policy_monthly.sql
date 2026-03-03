@@ -1,3 +1,8 @@
+{{ config(
+    materialized='incremental',
+    unique_key=['policy_id', 'event_month']
+) }}
+
 with events as (
 
     select
@@ -43,23 +48,32 @@ event_rollup as (
 
 )
 
-select
-    e.policy_id,
-    e.customer_nk,
-    e.event_month,
+select *
+from (
 
-    e.quote_count,
-    e.new_business_count,
-    e.mta_count,
-    e.renewal_count,
-    e.cancellation_count,
-    e.lapse_count,
-    e.net_premium_change,
+    select
+        e.policy_id,
+        e.customer_nk,
+        e.event_month,
 
-    coalesce(c.claim_count, 0) as claim_count,
-    coalesce(c.total_paid, 0)  as total_paid
+        e.quote_count,
+        e.new_business_count,
+        e.mta_count,
+        e.renewal_count,
+        e.cancellation_count,
+        e.lapse_count,
+        e.net_premium_change,
 
-from event_rollup e
-left join claims c
-  on e.policy_id = c.policy_id
- and e.event_month = c.claim_month
+        coalesce(c.claim_count, 0) as claim_count,
+        coalesce(c.total_paid, 0)  as total_paid
+
+    from event_rollup e
+    left join claims c
+      on e.policy_id = c.policy_id
+     and e.event_month = c.claim_month
+
+) final
+
+{% if is_incremental() %}
+where event_month > (select max(event_month) from {{ this }})
+{% endif %}
