@@ -1,0 +1,11 @@
+macros:
+  - name: generate_schema_name
+    description: |
+      Controls final schema resolution.
+    arguments:
+      - name: custom_schema_name
+        type: string
+        description: "Schema defined via +schema config."
+      - name: node
+        type: object
+        description: "The dbt node object being compiled."
