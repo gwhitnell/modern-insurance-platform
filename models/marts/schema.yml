@@ -1,6 +1,224 @@
+version: 2
+
 models:
+
   - name: dim_customer
-    description: "Customer dimension (deduplicated)."
+    description: |
+      Customer dimension (deduplicated).
+
+      Grain:
+        One row per logical customer.
+
+      Deduplication Strategy:
+        - Primary natural key: email address (if present)
+        - Fallback natural key: customer_id
+        - Most recent record selected using:
+            1. created_at_ts (descending)
+            2. ingested_at (descending)
+
+      Purpose:
+        Provides a canonical customer record for downstream analytics,
+        preventing duplicate counting across systems.
+
     columns:
       - name: customer_nk
+        description: "Derived natural key used for deduplication."
         tests: [not_null, unique]
+
+      - name: customer_id
+        description: "Source system customer identifier."
+
+      - name: first_name
+        description: "Customer first name."
+
+      - name: last_name
+        description: "Customer last name."
+
+      - name: date_of_birth
+        description: "Customer date of birth."
+
+      - name: email
+        description: "Normalized lowercase email address."
+
+      - name: created_at
+        description: "Original record creation timestamp."
+
+      - name: source_system
+        description: "Source system that produced the record."
+
+  # ---------------------------------------------------------------------
+
+  - name: dim_policy
+    description: |
+      Policy dimension.
+
+      Grain:
+        One row per policy_id.
+
+      Purpose:
+        Provides a stable policy-level entity linked to the
+        deduplicated customer dimension.
+
+    columns:
+      - name: policy_id
+        description: "Unique policy identifier."
+        tests: [not_null, unique]
+
+      - name: customer_id
+        description: "Original customer identifier from source system."
+        tests: [not_null]
+
+      - name: customer_nk
+        description: "Logical customer key from dim_customer."
+
+      - name: product_code
+        description: "Product identifier (e.g., motor, home, SME)."
+
+      - name: inception_date
+        description: "Policy inception date."
+
+      - name: expiry_date
+        description: "Policy expiry date."
+
+      - name: policy_status
+        description: "Current policy lifecycle status."
+
+      - name: annual_premium
+        description: "Annualized premium amount."
+
+  # ---------------------------------------------------------------------
+
+  - name: fct_business_events
+    description: |
+      Business events fact table.
+
+      Grain:
+        One row per event_id.
+
+      Event Types:
+        - quote
+        - new_business
+        - mta
+        - renewal
+        - cancellation
+        - lapse
+
+      Purpose:
+        Tracks lifecycle events impacting policy state and premium movement.
+        Used for growth, retention, and revenue analytics.
+
+    columns:
+      - name: event_id
+        description: "Unique event identifier."
+        tests: [not_null, unique]
+
+      - name: policy_id
+        description: "Associated policy identifier."
+        tests: [not_null]
+
+      - name: customer_nk
+        description: "Logical customer key."
+
+      - name: event_ts
+        description: "Timestamp of the business event."
+
+      - name: event_type
+        description: "Categorized lifecycle event type."
+        tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - quote
+                  - new_business
+                  - mta
+                  - renewal
+                  - cancellation
+                  - lapse
+
+      - name: gross_premium_change
+        description: "Premium delta caused by the event."
+
+  # ---------------------------------------------------------------------
+
+  - name: fct_claims
+    description: |
+      Claims fact table.
+
+      Grain:
+        One row per claim_id.
+
+      Purpose:
+        Tracks claim activity and financial impact for policies.
+
+    columns:
+      - name: claim_id
+        description: "Unique claim identifier."
+        tests: [not_null, unique]
+
+      - name: policy_id
+        description: "Associated policy identifier."
+        tests: [not_null]
+
+      - name: customer_nk
+        description: "Logical customer key."
+
+      - name: loss_date
+        description: "Date of loss occurrence."
+
+      - name: reported_date
+        description: "Date claim was reported."
+
+      - name: claim_status
+        description: "Current claim lifecycle status."
+        tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - OPEN
+                  - CLOSED
+                  - REJECTED
+
+      - name: paid_amount
+        description: "Total paid amount on the claim."
+
+  # ---------------------------------------------------------------------
+
+  - name: fct_policy_monthly
+    description: |
+      Monthly policy-level rollup table.
+
+      Grain:
+        One row per policy_id per calendar month.
+
+      Metrics:
+        - quote_count
+        - new_business_count
+        - mta_count
+        - renewal_count
+        - cancellation_count
+        - lapse_count
+        - net_premium_change
+        - claim_count
+        - total_paid
+
+      Purpose:
+        Serves as a BI-ready dataset for performance monitoring,
+        retention analysis, and underwriting review.
+
+    columns:
+      - name: policy_id
+        description: "Policy identifier."
+        tests: [not_null]
+
+      - name: event_month
+        description: "Calendar month of activity."
+        tests: [not_null]
+
+      - name: net_premium_change
+        description: "Net premium movement during the month."
+
+      - name: claim_count
+        description: "Number of claims in the month."
+
+      - name: total_paid
+        description: "Total claims paid in the month."

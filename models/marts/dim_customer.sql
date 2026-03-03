@@ -1,3 +1,9 @@
+-- Dedupe strategy:
+-- 1. Prefer email as natural key
+-- 2. Fallback to customer_id
+-- 3. Select most recent created_at_ts
+-- 4. Tie-break using ingested_at
+
 with base as (
 
     select
