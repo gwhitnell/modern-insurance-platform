@@ -70,6 +70,11 @@ models:
 
       - name: customer_nk
         description: "Logical customer key from dim_customer."
+        tests:
+        - relationships:
+            arguments:
+              to: ref('dim_customer')
+              field: customer_nk
 
       - name: product_code
         description: "Product identifier (e.g., motor, home, SME)."
@@ -157,7 +162,12 @@ models:
 
       - name: policy_id
         description: "Associated policy identifier."
-        tests: [not_null]
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_policy')
+                field: policy_id
 
       - name: customer_nk
         description: "Logical customer key."
