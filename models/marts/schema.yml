@@ -232,3 +232,10 @@ models:
 
       - name: total_paid
         description: "Total claims paid in the month."
+    
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - policy_id
+              - event_month
