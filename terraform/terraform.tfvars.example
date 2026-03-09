@@ -1,0 +1,8 @@
+snowflake_account_identifier = "konkwch-az19719"
+snowflake_user               = "YOUR_SNOWFLAKE_USER"
+snowflake_password           = "YOUR_SNOWFLAKE_PASSWORD"
+snowflake_role               = "ACCOUNTADMIN"
+
+warehouse_name    = "MODERN_INSURANCE_PLATFORM_WH"
+dev_database_name = "DEV_MODERN_INSURANCE_PLATFORM"
+prd_database_name = "PRD_MODERN_INSURANCE_PLATFORM"

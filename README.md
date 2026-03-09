@@ -7,3 +7,9 @@ DBT - For this demonstration we will be using DBT core as it is free in combinat
 https://docs.getdbt.com/docs/core/connect-data-platform/snowflake-setup
 
 Snowflake - Instructions on getting setup on free trial
+
+## Project Structure
+
+- `models/` dbt models (staging + marts)
+- `macros/` dbt macros (including schema naming override)
+- `terraform/` Snowflake infrastructure as code (warehouse, env databases, layered schemas)
