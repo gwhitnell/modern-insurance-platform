@@ -1,5 +1,10 @@
-variable "snowflake_account_identifier" {
-  description = "Snowflake account identifier, e.g. konkwch-az19719."
+variable "snowflake_organization_name" {
+  description = "Snowflake organization name"
+  type        = string
+}
+
+variable "snowflake_account_name" {
+  description = "Snowflake account name"
   type        = string
 }
 
