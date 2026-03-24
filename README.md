@@ -1,15 +1,31 @@
-# modern-insurance-platform
-Using DBT and Snowflake to build a sample modern insurance platform for learning purposes
+## 🧠 Design Principles
 
-Resources:
+This platform is built using modern data engineering best practices:
 
-DBT - For this demonstration we will be using DBT core as it is free in combination with snowflake
-https://docs.getdbt.com/docs/core/connect-data-platform/snowflake-setup
+- **Layered Architecture**
+  - RAW → CLEAN → ANALYTICS separation
+- **Incremental Processing**
+  - Snowflake Streams + Tasks for change data capture
+- **Transformation Framework**
+  - dbt for modular, testable transformations
+- **Infrastructure as Code**
+  - Terraform manages all Snowflake resources
+- **Security & Governance**
+  - Role-based access control (RBAC)
+- **Environment Separation**
+  - DEV and PRD databases for safe deployment
 
-Snowflake - Instructions on getting setup on free trial
+## 🔐 Roles & Responsibilities
 
-## Project Structure
+| Role            | Access Level |
+|-----------------|-------------|
+| ROLE_LOADER     | Insert into RAW |
+| ROLE_TRANSFORM  | Full access to CLEAN & ANALYTICS |
+| ROLE_ANALYST    | Read-only access to ANALYTICS |
 
-- `models/` dbt models (staging + marts)
-- `macros/` dbt macros (including schema naming override)
-- `terraform/` Snowflake infrastructure as code (warehouse, env databases, layered schemas)
+## ⚙️ Tech Stack
+
+- Snowflake (Data Platform)
+- dbt (Transformations)
+- Terraform (Infrastructure)
+- SQL / Python
