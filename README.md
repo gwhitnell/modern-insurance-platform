@@ -33,6 +33,40 @@ This platform is built using modern data engineering best practices:
 
 ## 🧪 Running the Project End-to-End
 
+## 🔐 Snowflake Setup
+
+Create a free Snowflake account if you don't already have an account
+
+https://signup.snowflake.com/
+
+Then gather:
+
+snowflake_organization_name  = "YOUR_SNOWFLAKE_ORG_NAME"
+snowflake_account_name       = "YOUR_SNOWFLAKE_ACCOUNT_NAME"
+snowflake_user               = "YOUR_SNOWFLAKE_USER"
+snowflake_password           = "YOUR_SNOWFLAKE_PASSWORD"
+snowflake_role               = "ACCOUNTADMIN"
+
+You can find your account identifier in Snowsight:
+Admin → Accounts → Locator
+
+Copy terraform.tfvars.example → terraform.tfvars
+
+Update with your credentials
+
+## dbt Execution Options
+
+### Option 1: Local dbt
+Run dbt locally using dbt-snowflake.
+
+### Option 2: Snowflake Native dbt (Recommended)
+Run dbt directly in Snowflake using Snowsight:
+
+1. Go to Data → Projects → dbt Projects
+2. Connect to this repository
+3. Configure environment
+4. Run models
+
 ### 1. Deploy Infrastructure
 terraform init
 terraform apply
