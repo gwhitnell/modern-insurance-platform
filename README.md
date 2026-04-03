@@ -29,3 +29,31 @@ This platform is built using modern data engineering best practices:
 - dbt (Transformations)
 - Terraform (Infrastructure)
 - SQL / Python
+
+
+## 🧪 Running the Project End-to-End
+
+### 1. Deploy Infrastructure
+terraform init
+terraform apply
+
+### 2. Load Sample Data
+Run the scripts in /setup:
+
+- 01_reset.sql
+- 02_seed_raw_data.sql
+
+### 3. Run Transformations
+dbt run
+dbt test
+
+### 4. Validate Outputs
+
+RAW:
+SELECT COUNT(*) FROM RAW.BUSINESS_EVENTS;
+
+CLEAN:
+SELECT COUNT(*) FROM CLEAN.BUSINESS_EVENTS_INCREMENTAL;
+
+ANALYTICS:
+SELECT * FROM ANALYTICS.FCT_BUSINESS_EVENTS;
