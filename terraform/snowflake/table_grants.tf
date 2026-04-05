@@ -3,7 +3,7 @@
 ############################################
 
 resource "snowflake_grant_privileges_to_account_role" "loader_insert_raw_dev" {
-  account_role_name = "ROLE_LOADER"
+  account_role_name = snowflake_account_role.loader_role.name
   privileges        = ["INSERT"]
 
   on_schema_object {
@@ -12,6 +12,10 @@ resource "snowflake_grant_privileges_to_account_role" "loader_insert_raw_dev" {
       in_schema          = "${var.dev_database_name}.RAW"
     }
   }
+
+  depends_on = [
+    snowflake_grant_privileges_to_account_role.loader_raw_usage_dev,
+  ]
 }
 
 ############################################
@@ -19,7 +23,7 @@ resource "snowflake_grant_privileges_to_account_role" "loader_insert_raw_dev" {
 ############################################
 
 resource "snowflake_grant_privileges_to_account_role" "transform_all_clean_dev" {
-  account_role_name = "ROLE_TRANSFORM"
+  account_role_name = snowflake_account_role.transform_role.name
   privileges        = ["SELECT", "INSERT", "UPDATE", "DELETE"]
 
   on_schema_object {
@@ -28,10 +32,14 @@ resource "snowflake_grant_privileges_to_account_role" "transform_all_clean_dev" 
       in_schema          = "${var.dev_database_name}.CLEAN"
     }
   }
+
+  depends_on = [
+    snowflake_grant_privileges_to_account_role.transform_clean_usage_dev,
+  ]
 }
 
 resource "snowflake_grant_privileges_to_account_role" "transform_all_analytics_dev" {
-  account_role_name = "ROLE_TRANSFORM"
+  account_role_name = snowflake_account_role.transform_role.name
   privileges        = ["SELECT", "INSERT", "UPDATE", "DELETE"]
 
   on_schema_object {
@@ -40,6 +48,10 @@ resource "snowflake_grant_privileges_to_account_role" "transform_all_analytics_d
       in_schema          = "${var.dev_database_name}.ANALYTICS"
     }
   }
+
+  depends_on = [
+    snowflake_grant_privileges_to_account_role.transform_analytics_usage_dev,
+  ]
 }
 
 ############################################
@@ -47,7 +59,7 @@ resource "snowflake_grant_privileges_to_account_role" "transform_all_analytics_d
 ############################################
 
 resource "snowflake_grant_privileges_to_account_role" "analyst_select_analytics_dev" {
-  account_role_name = "ROLE_ANALYST"
+  account_role_name = snowflake_account_role.analyst_role.name
   privileges        = ["SELECT"]
 
   on_schema_object {
@@ -56,6 +68,10 @@ resource "snowflake_grant_privileges_to_account_role" "analyst_select_analytics_
       in_schema          = "${var.dev_database_name}.ANALYTICS"
     }
   }
+
+  depends_on = [
+    snowflake_grant_privileges_to_account_role.analyst_analytics_usage_dev,
+  ]
 }
 
 ############################################
@@ -65,7 +81,7 @@ resource "snowflake_grant_privileges_to_account_role" "analyst_select_analytics_
 # Automatically grant access to new tables created by dbt
 
 resource "snowflake_grant_privileges_to_account_role" "analyst_future_select_analytics_dev" {
-  account_role_name = "ROLE_ANALYST"
+  account_role_name = snowflake_account_role.analyst_role.name
   privileges        = ["SELECT"]
 
   on_schema_object {
@@ -74,10 +90,14 @@ resource "snowflake_grant_privileges_to_account_role" "analyst_future_select_ana
       in_schema          = "${var.dev_database_name}.ANALYTICS"
     }
   }
+
+  depends_on = [
+    snowflake_grant_privileges_to_account_role.analyst_analytics_usage_dev,
+  ]
 }
 
 resource "snowflake_grant_privileges_to_account_role" "transform_future_all_clean_dev" {
-  account_role_name = "ROLE_TRANSFORM"
+  account_role_name = snowflake_account_role.transform_role.name
   privileges        = ["SELECT", "INSERT", "UPDATE", "DELETE"]
 
   on_schema_object {
@@ -86,4 +106,8 @@ resource "snowflake_grant_privileges_to_account_role" "transform_future_all_clea
       in_schema          = "${var.dev_database_name}.CLEAN"
     }
   }
+
+  depends_on = [
+    snowflake_grant_privileges_to_account_role.transform_clean_usage_dev,
+  ]
 }
