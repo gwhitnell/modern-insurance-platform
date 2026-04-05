@@ -7,3 +7,4 @@ snowflake_role               = "ACCOUNTADMIN"
 warehouse_name    = "MODERN_INSURANCE_PLATFORM_WH"
 dev_database_name = "DEV_MODERN_INSURANCE_PLATFORM"
 prd_database_name = "PRD_MODERN_INSURANCE_PLATFORM"
+enable_streams_and_tasks = false

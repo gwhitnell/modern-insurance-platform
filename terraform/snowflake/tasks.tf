@@ -1,4 +1,6 @@
 resource "snowflake_task" "business_events_task" {
+  count = var.enable_streams_and_tasks ? 1 : 0
+
   name      = "BUSINESS_EVENTS_TASK"
   database  = var.dev_database_name
   schema    = "RAW"
@@ -25,4 +27,10 @@ SELECT
 FROM ${var.dev_database_name}.RAW.BUSINESS_EVENTS_STREAM
 WHERE METADATA$ACTION = 'INSERT'
 EOT
+
+  depends_on = [
+    snowflake_warehouse.platform_wh,
+    snowflake_stream_on_table.business_events_stream,
+    snowflake_schema.layer_schema,
+  ]
 }

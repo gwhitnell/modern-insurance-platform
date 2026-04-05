@@ -48,3 +48,9 @@ variable "schema_names" {
   type        = set(string)
   default     = ["RAW", "CLEAN", "ANALYTICS"]
 }
+
+variable "enable_streams_and_tasks" {
+  description = "Enable optional Snowflake streams and tasks after the underlying tables exist."
+  type        = bool
+  default     = false
+}
