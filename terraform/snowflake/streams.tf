@@ -10,7 +10,7 @@ resource "snowflake_stream_on_table" "business_events_stream" {
   append_only = true
 
   depends_on = [
-    snowflake_table.raw_table["${var.dev_database_name}.RAW.BUSINESS_EVENTS"],
+    snowflake_table.raw_table,
     snowflake_schema.layer_schema,
   ]
 }
