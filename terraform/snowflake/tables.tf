@@ -55,7 +55,7 @@ locals {
   raw_table_matrix = merge([
     for env, db_name in local.env_databases : {
       for table_name, definition in local.raw_table_definitions :
-      "${env}_${table_name}" => {
+      "${db_name}.RAW.${table_name}" => {
         database = db_name
         schema   = "RAW"
         name     = table_name
