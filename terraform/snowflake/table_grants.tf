@@ -1,10 +1,10 @@
 ############################################
-# LOADER: INSERT INTO RAW
+# LOADER: READ + RESET + INSERT INTO RAW
 ############################################
 
-resource "snowflake_grant_privileges_to_account_role" "loader_insert_raw_dev" {
+resource "snowflake_grant_privileges_to_account_role" "loader_manage_raw_dev" {
   account_role_name = snowflake_account_role.loader_role.name
-  privileges        = ["INSERT"]
+  privileges        = ["SELECT", "INSERT", "TRUNCATE"]
 
   on_schema_object {
     all {
@@ -79,6 +79,22 @@ resource "snowflake_grant_privileges_to_account_role" "analyst_select_analytics_
 ############################################
 
 # Automatically grant access to new tables created by dbt
+
+resource "snowflake_grant_privileges_to_account_role" "loader_future_manage_raw_dev" {
+  account_role_name = snowflake_account_role.loader_role.name
+  privileges        = ["SELECT", "INSERT", "TRUNCATE"]
+
+  on_schema_object {
+    future {
+      object_type_plural = "TABLES"
+      in_schema          = "${var.dev_database_name}.RAW"
+    }
+  }
+
+  depends_on = [
+    snowflake_grant_privileges_to_account_role.loader_raw_usage_dev,
+  ]
+}
 
 resource "snowflake_grant_privileges_to_account_role" "analyst_future_select_analytics_dev" {
   account_role_name = snowflake_account_role.analyst_role.name
