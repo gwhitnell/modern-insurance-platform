@@ -10,6 +10,7 @@ locals {
         { name = "EMAIL", type = "VARCHAR" },
         { name = "CREATED_AT", type = "VARCHAR" },
         { name = "SOURCE_SYSTEM", type = "VARCHAR" },
+        { name = "INGESTED_AT", type = "TIMESTAMP_NTZ" },
       ]
     }
     POLICIES = {
@@ -23,6 +24,7 @@ locals {
         { name = "STATUS", type = "VARCHAR" },
         { name = "ANNUAL_PREMIUM", type = "VARCHAR" },
         { name = "SOURCE_SYSTEM", type = "VARCHAR" },
+        { name = "INGESTED_AT", type = "TIMESTAMP_NTZ" },
       ]
     }
     CLAIMS = {
@@ -35,6 +37,7 @@ locals {
         { name = "CLAIM_STATUS", type = "VARCHAR" },
         { name = "PAID_AMOUNT", type = "VARCHAR" },
         { name = "SOURCE_SYSTEM", type = "VARCHAR" },
+        { name = "INGESTED_AT", type = "TIMESTAMP_NTZ" },
       ]
     }
     BUSINESS_EVENTS = {
@@ -48,6 +51,7 @@ locals {
         { name = "GROSS_PREMIUM_CHANGE", type = "VARCHAR" },
         { name = "EVENT_VERSION", type = "VARCHAR" },
         { name = "SOURCE_SYSTEM", type = "VARCHAR" },
+        { name = "INGESTED_AT", type = "TIMESTAMP_NTZ" },
       ]
     }
   }
