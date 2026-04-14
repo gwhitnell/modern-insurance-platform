@@ -133,6 +133,8 @@ Run the scripts in /setup:
 
 If incremental required run task in snowflake which will consume resource EXECUTE TASK RAW.BUSINESS_EVENTS_TASK;
 
+Additional info for production in setup/README.md
+
 ### 3. Run Transformations
 
 ## dbt Execution Options
@@ -189,11 +191,12 @@ dbt debug --target prd
 dbt run
 dbt test
 
-### Option 2: Snowflake Native dbt (Recommended)
+### Option 2: Snowflake Native dbt (Recommended) -- there are some limitations to trial account because external access is disabled
+
 Run dbt directly in Snowflake using Snowsight:
 
-1. Go to Data → Projects → dbt Projects
-2. Connect to this repository
+1. Go to My Worksheets → My Workspace → From Git repository
+2. Connect to this repository (May need API integration in snowflake)
 3. Configure environment
 4. Run models
 
