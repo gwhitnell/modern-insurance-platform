@@ -138,6 +138,52 @@ Run the scripts in /setup:
 ### Option 1: Local dbt
 Run dbt locally using dbt-snowflake.
 
+Create a local dbt profile at `~/.dbt/profiles.yml`.
+
+This project uses the dbt profile name `modern_insurance_platform` from `dbt_project.yml`, so your local `profiles.yml` must contain a matching entry.
+
+Example:
+
+```yaml
+modern_insurance_platform:
+  outputs:
+    dev:
+      type: snowflake
+      account: YOUR_ACCOUNT_IDENTIFIER
+      user: YOUR_USERNAME
+      password: YOUR_PASSWORD
+      role: ACCOUNTADMIN
+      warehouse: MODERN_INSURANCE_PLATFORM_WH
+      database: DEV_MODERN_INSURANCE_PLATFORM
+      schema: DBT
+      threads: 4
+    prd:
+      type: snowflake
+      account: YOUR_ACCOUNT_IDENTIFIER
+      user: YOUR_USERNAME
+      password: YOUR_PASSWORD
+      role: ACCOUNTADMIN
+      warehouse: MODERN_INSURANCE_PLATFORM_WH
+      database: PRD_MODERN_INSURANCE_PLATFORM
+      schema: DBT
+      threads: 4
+  target: dev
+```
+
+How to use it:
+
+- `dbt debug` uses the default target from `target: dev`
+- `dbt run` builds into `DEV_MODERN_INSURANCE_PLATFORM`
+- `dbt run --target prd` builds into `PRD_MODERN_INSURANCE_PLATFORM`
+- `dbt test --target prd` runs tests against PRD
+
+Check your local connection:
+
+```bash
+dbt debug
+dbt debug --target prd
+```
+
 dbt run
 dbt test
 
