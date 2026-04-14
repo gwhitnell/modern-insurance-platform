@@ -1,11 +1,11 @@
 resource "snowflake_stream_on_table" "business_events_stream" {
-  count = var.enable_streams_and_tasks ? 1 : 0
+  for_each = var.enable_streams_and_tasks ? local.env_databases : tomap({})
 
   name     = "BUSINESS_EVENTS_STREAM"
-  database = var.dev_database_name
+  database = each.value
   schema   = "RAW"
 
-  table = "${var.dev_database_name}.RAW.BUSINESS_EVENTS"
+  table = "${each.value}.RAW.BUSINESS_EVENTS"
 
   append_only = true
 

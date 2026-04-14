@@ -18,6 +18,22 @@ resource "snowflake_grant_privileges_to_account_role" "loader_manage_raw_dev" {
   ]
 }
 
+resource "snowflake_grant_privileges_to_account_role" "loader_manage_raw_prd" {
+  account_role_name = snowflake_account_role.loader_role.name
+  privileges        = ["SELECT", "INSERT", "TRUNCATE"]
+
+  on_schema_object {
+    all {
+      object_type_plural = "TABLES"
+      in_schema          = "${var.prd_database_name}.RAW"
+    }
+  }
+
+  depends_on = [
+    snowflake_grant_privileges_to_account_role.loader_raw_usage_prd,
+  ]
+}
+
 ############################################
 # TRANSFORM: FULL ACCESS CLEAN + ANALYTICS
 ############################################
@@ -38,6 +54,22 @@ resource "snowflake_grant_privileges_to_account_role" "transform_all_clean_dev" 
   ]
 }
 
+resource "snowflake_grant_privileges_to_account_role" "transform_all_clean_prd" {
+  account_role_name = snowflake_account_role.transform_role.name
+  privileges        = ["SELECT", "INSERT", "UPDATE", "DELETE"]
+
+  on_schema_object {
+    all {
+      object_type_plural = "TABLES"
+      in_schema          = "${var.prd_database_name}.CLEAN"
+    }
+  }
+
+  depends_on = [
+    snowflake_grant_privileges_to_account_role.transform_clean_usage_prd,
+  ]
+}
+
 resource "snowflake_grant_privileges_to_account_role" "transform_all_analytics_dev" {
   account_role_name = snowflake_account_role.transform_role.name
   privileges        = ["SELECT", "INSERT", "UPDATE", "DELETE"]
@@ -51,6 +83,22 @@ resource "snowflake_grant_privileges_to_account_role" "transform_all_analytics_d
 
   depends_on = [
     snowflake_grant_privileges_to_account_role.transform_analytics_usage_dev,
+  ]
+}
+
+resource "snowflake_grant_privileges_to_account_role" "transform_all_analytics_prd" {
+  account_role_name = snowflake_account_role.transform_role.name
+  privileges        = ["SELECT", "INSERT", "UPDATE", "DELETE"]
+
+  on_schema_object {
+    all {
+      object_type_plural = "TABLES"
+      in_schema          = "${var.prd_database_name}.ANALYTICS"
+    }
+  }
+
+  depends_on = [
+    snowflake_grant_privileges_to_account_role.transform_analytics_usage_prd,
   ]
 }
 
@@ -71,6 +119,22 @@ resource "snowflake_grant_privileges_to_account_role" "analyst_select_analytics_
 
   depends_on = [
     snowflake_grant_privileges_to_account_role.analyst_analytics_usage_dev,
+  ]
+}
+
+resource "snowflake_grant_privileges_to_account_role" "analyst_select_analytics_prd" {
+  account_role_name = snowflake_account_role.analyst_role.name
+  privileges        = ["SELECT"]
+
+  on_schema_object {
+    all {
+      object_type_plural = "TABLES"
+      in_schema          = "${var.prd_database_name}.ANALYTICS"
+    }
+  }
+
+  depends_on = [
+    snowflake_grant_privileges_to_account_role.analyst_analytics_usage_prd,
   ]
 }
 
@@ -96,6 +160,22 @@ resource "snowflake_grant_privileges_to_account_role" "loader_future_manage_raw_
   ]
 }
 
+resource "snowflake_grant_privileges_to_account_role" "loader_future_manage_raw_prd" {
+  account_role_name = snowflake_account_role.loader_role.name
+  privileges        = ["SELECT", "INSERT", "TRUNCATE"]
+
+  on_schema_object {
+    future {
+      object_type_plural = "TABLES"
+      in_schema          = "${var.prd_database_name}.RAW"
+    }
+  }
+
+  depends_on = [
+    snowflake_grant_privileges_to_account_role.loader_raw_usage_prd,
+  ]
+}
+
 resource "snowflake_grant_privileges_to_account_role" "analyst_future_select_analytics_dev" {
   account_role_name = snowflake_account_role.analyst_role.name
   privileges        = ["SELECT"]
@@ -112,6 +192,22 @@ resource "snowflake_grant_privileges_to_account_role" "analyst_future_select_ana
   ]
 }
 
+resource "snowflake_grant_privileges_to_account_role" "analyst_future_select_analytics_prd" {
+  account_role_name = snowflake_account_role.analyst_role.name
+  privileges        = ["SELECT"]
+
+  on_schema_object {
+    future {
+      object_type_plural = "TABLES"
+      in_schema          = "${var.prd_database_name}.ANALYTICS"
+    }
+  }
+
+  depends_on = [
+    snowflake_grant_privileges_to_account_role.analyst_analytics_usage_prd,
+  ]
+}
+
 resource "snowflake_grant_privileges_to_account_role" "transform_future_all_clean_dev" {
   account_role_name = snowflake_account_role.transform_role.name
   privileges        = ["SELECT", "INSERT", "UPDATE", "DELETE"]
@@ -125,5 +221,53 @@ resource "snowflake_grant_privileges_to_account_role" "transform_future_all_clea
 
   depends_on = [
     snowflake_grant_privileges_to_account_role.transform_clean_usage_dev,
+  ]
+}
+
+resource "snowflake_grant_privileges_to_account_role" "transform_future_all_clean_prd" {
+  account_role_name = snowflake_account_role.transform_role.name
+  privileges        = ["SELECT", "INSERT", "UPDATE", "DELETE"]
+
+  on_schema_object {
+    future {
+      object_type_plural = "TABLES"
+      in_schema          = "${var.prd_database_name}.CLEAN"
+    }
+  }
+
+  depends_on = [
+    snowflake_grant_privileges_to_account_role.transform_clean_usage_prd,
+  ]
+}
+
+resource "snowflake_grant_privileges_to_account_role" "transform_future_all_analytics_dev" {
+  account_role_name = snowflake_account_role.transform_role.name
+  privileges        = ["SELECT", "INSERT", "UPDATE", "DELETE"]
+
+  on_schema_object {
+    future {
+      object_type_plural = "TABLES"
+      in_schema          = "${var.dev_database_name}.ANALYTICS"
+    }
+  }
+
+  depends_on = [
+    snowflake_grant_privileges_to_account_role.transform_analytics_usage_dev,
+  ]
+}
+
+resource "snowflake_grant_privileges_to_account_role" "transform_future_all_analytics_prd" {
+  account_role_name = snowflake_account_role.transform_role.name
+  privileges        = ["SELECT", "INSERT", "UPDATE", "DELETE"]
+
+  on_schema_object {
+    future {
+      object_type_plural = "TABLES"
+      in_schema          = "${var.prd_database_name}.ANALYTICS"
+    }
+  }
+
+  depends_on = [
+    snowflake_grant_privileges_to_account_role.transform_analytics_usage_prd,
   ]
 }

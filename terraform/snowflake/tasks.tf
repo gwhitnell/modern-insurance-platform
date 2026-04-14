@@ -1,7 +1,7 @@
 resource "snowflake_table" "stg_business_events_incremental" {
-  count = var.enable_streams_and_tasks ? 1 : 0
+  for_each = var.enable_streams_and_tasks ? local.env_databases : tomap({})
 
-  database = var.dev_database_name
+  database = each.value
   schema   = "CLEAN"
   name     = "STG_BUSINESS_EVENTS_INCREMENTAL"
   comment  = "Incremental staging table populated by the business events stream task."
@@ -57,10 +57,10 @@ resource "snowflake_table" "stg_business_events_incremental" {
 }
 
 resource "snowflake_task" "business_events_task" {
-  count = var.enable_streams_and_tasks ? 1 : 0
+  for_each = var.enable_streams_and_tasks ? local.env_databases : tomap({})
 
   name      = "BUSINESS_EVENTS_TASK"
-  database  = var.dev_database_name
+  database  = each.value
   schema    = "RAW"
   warehouse = var.warehouse_name
 
@@ -71,7 +71,7 @@ resource "snowflake_task" "business_events_task" {
   }
 
   sql_statement = <<EOT
-INSERT INTO ${var.dev_database_name}.CLEAN.STG_BUSINESS_EVENTS_INCREMENTAL (
+INSERT INTO ${each.value}.CLEAN.STG_BUSINESS_EVENTS_INCREMENTAL (
     EVENT_ID,
     POLICY_ID,
     EVENT_TS,
@@ -92,7 +92,7 @@ SELECT
     EVENT_VERSION,
     SOURCE_SYSTEM,
     COALESCE(INGESTED_AT, CURRENT_TIMESTAMP())
-FROM ${var.dev_database_name}.RAW.BUSINESS_EVENTS_STREAM
+FROM ${each.value}.RAW.BUSINESS_EVENTS_STREAM
 WHERE METADATA$ACTION = 'INSERT'
 EOT
 

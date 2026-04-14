@@ -9,7 +9,7 @@ This platform is built using modern data engineering best practices:
 - **Transformation Framework**
   - dbt for modular, testable transformations
 - **Infrastructure as Code**
-  - Terraform manages all Snowflake resources
+  - Terraform manages Snowflake resources and RAW layer
 - **Security & Governance**
   - Role-based access control (RBAC)
 - **Environment Separation**
@@ -25,6 +25,7 @@ This platform is built using modern data engineering best practices:
 
 ## ⚙️ Tech Stack
 
+- Git (Source Control)
 - Snowflake (Data Platform)
 - dbt (Transformations)
 - Terraform (Infrastructure)
@@ -32,6 +33,62 @@ This platform is built using modern data engineering best practices:
 
 
 ## 🧪 Running the Project End-to-End
+
+## ✅ Prerequisites
+
+Before running the project locally, install:
+
+- Git
+- Terraform
+- Python 3.10+
+- dbt Core with the Snowflake adapter
+- A Snowflake account
+
+### Install Git
+
+Ubuntu / WSL:
+`sudo apt update && sudo apt install -y git`
+
+macOS:
+`brew install git`
+
+Check:
+`git --version`
+
+### Install Terraform
+
+Ubuntu / WSL:
+
+```bash
+sudo apt update && sudo apt install -y wget gpg lsb-release
+wget -O- https://apt.releases.hashicorp.com/gpg | \
+gpg --dearmor | \
+sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
+https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
+sudo tee /etc/apt/sources.list.d/hashicorp.list
+sudo apt update && sudo apt install -y terraform
+```
+
+macOS:
+`brew tap hashicorp/tap && brew install hashicorp/tap/terraform`
+
+Check:
+`terraform --version`
+
+### Install Python And dbt
+
+Create a virtual environment and install dbt:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+pip install dbt-core dbt-snowflake
+```
+
+Check:
+`dbt --version`
 
 ## 🔐 Snowflake Setup
 
@@ -50,13 +107,21 @@ snowflake_role               = "ACCOUNTADMIN"
 You can find your account identifier in Snowsight:
 Admin → Accounts → Locator
 
+### 0. Clone Repository
+
+git clone https://github.com/gwhitnell/modern-insurance-platform.git
+cd modern_insurance_platform
+
+### 1. Deploy Infrastructure
+
+cd terraform
+
 Copy terraform.tfvars.example → terraform.tfvars
 
-Update with your credentials
+Update with your snowflake credentials
 
 `terraform apply` grants `ROLE_LOADER`, `ROLE_TRANSFORM`, and `ROLE_ANALYST` to the configured `snowflake_user`, so the setup scripts can switch roles without a separate manual grant step.
 
-### 1. Deploy Infrastructure / optional variable default enable_streams_and_tasks = false
 terraform init
 terraform apply
 
