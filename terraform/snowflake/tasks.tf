@@ -1,3 +1,61 @@
+resource "snowflake_table" "stg_business_events_incremental" {
+  count = var.enable_streams_and_tasks ? 1 : 0
+
+  database = var.dev_database_name
+  schema   = "CLEAN"
+  name     = "STG_BUSINESS_EVENTS_INCREMENTAL"
+  comment  = "Incremental staging table populated by the business events stream task."
+
+  column {
+    name = "EVENT_ID"
+    type = "VARCHAR"
+  }
+
+  column {
+    name = "POLICY_ID"
+    type = "VARCHAR"
+  }
+
+  column {
+    name = "EVENT_TS"
+    type = "VARCHAR"
+  }
+
+  column {
+    name = "EVENT_TYPE"
+    type = "VARCHAR"
+  }
+
+  column {
+    name = "CHANNEL"
+    type = "VARCHAR"
+  }
+
+  column {
+    name = "GROSS_PREMIUM_CHANGE"
+    type = "VARCHAR"
+  }
+
+  column {
+    name = "EVENT_VERSION"
+    type = "VARCHAR"
+  }
+
+  column {
+    name = "SOURCE_SYSTEM"
+    type = "VARCHAR"
+  }
+
+  column {
+    name = "INGESTED_AT"
+    type = "TIMESTAMP_NTZ"
+  }
+
+  depends_on = [
+    snowflake_schema.layer_schema,
+  ]
+}
+
 resource "snowflake_task" "business_events_task" {
   count = var.enable_streams_and_tasks ? 1 : 0
 
@@ -13,7 +71,7 @@ resource "snowflake_task" "business_events_task" {
   }
 
   sql_statement = <<EOT
-INSERT INTO ${var.dev_database_name}.CLEAN.BUSINESS_EVENTS_INCREMENTAL (
+INSERT INTO ${var.dev_database_name}.CLEAN.STG_BUSINESS_EVENTS_INCREMENTAL (
     EVENT_ID,
     POLICY_ID,
     EVENT_TS,
@@ -41,6 +99,7 @@ EOT
   depends_on = [
     snowflake_warehouse.platform_wh,
     snowflake_stream_on_table.business_events_stream,
+    snowflake_table.stg_business_events_incremental,
     snowflake_schema.layer_schema,
   ]
 }

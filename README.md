@@ -67,7 +67,7 @@ Run dbt directly in Snowflake using Snowsight:
 3. Configure environment
 4. Run models
 
-### 1. Deploy Infrastructure
+### 1. Deploy Infrastructure / optional variable default enable_streams_and_tasks = false
 terraform init
 terraform apply
 
@@ -87,7 +87,7 @@ RAW:
 SELECT COUNT(*) FROM RAW.BUSINESS_EVENTS;
 
 CLEAN:
-SELECT COUNT(*) FROM CLEAN.BUSINESS_EVENTS_INCREMENTAL;
+SELECT COUNT(*) FROM CLEAN.STG_BUSINESS_EVENTS;
 
 ANALYTICS:
 SELECT * FROM ANALYTICS.FCT_BUSINESS_EVENTS;
