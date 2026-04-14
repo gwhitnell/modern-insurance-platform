@@ -131,6 +131,8 @@ Run the scripts in /setup:
 - 01_reset.sql
 - 02_seed_raw_data.sql
 
+If incremental required run task in snowflake which will consume resource EXECUTE TASK RAW.BUSINESS_EVENTS_TASK;
+
 ### 3. Run Transformations
 
 ## dbt Execution Options
