@@ -54,18 +54,7 @@ Copy terraform.tfvars.example → terraform.tfvars
 
 Update with your credentials
 
-## dbt Execution Options
-
-### Option 1: Local dbt
-Run dbt locally using dbt-snowflake.
-
-### Option 2: Snowflake Native dbt (Recommended)
-Run dbt directly in Snowflake using Snowsight:
-
-1. Go to Data → Projects → dbt Projects
-2. Connect to this repository
-3. Configure environment
-4. Run models
+`terraform apply` grants `ROLE_LOADER`, `ROLE_TRANSFORM`, and `ROLE_ANALYST` to the configured `snowflake_user`, so the setup scripts can switch roles without a separate manual grant step.
 
 ### 1. Deploy Infrastructure / optional variable default enable_streams_and_tasks = false
 terraform init
@@ -78,8 +67,22 @@ Run the scripts in /setup:
 - 02_seed_raw_data.sql
 
 ### 3. Run Transformations
+
+## dbt Execution Options
+
+### Option 1: Local dbt
+Run dbt locally using dbt-snowflake.
+
 dbt run
 dbt test
+
+### Option 2: Snowflake Native dbt (Recommended)
+Run dbt directly in Snowflake using Snowsight:
+
+1. Go to Data → Projects → dbt Projects
+2. Connect to this repository
+3. Configure environment
+4. Run models
 
 ### 4. Validate Outputs
 
