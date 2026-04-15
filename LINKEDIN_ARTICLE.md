@@ -22,7 +22,7 @@ At the centre of the project is Snowflake, with dbt handling transformations and
 
 That separation was important to me because it keeps the platform easy to reason about and much more maintainable as it grows. At a high level, the job of the platform is simple: take raw insurance data across customers, policies, claims, and business events, and turn it into something that is usable for reporting, analysis, and decision-making.
 
-![Architecture Diagram](images/architecture-diagram.png)
+![Architecture Diagram](assets/images/architecture-diagram.png)
 
 ## What I Built
 
@@ -34,7 +34,7 @@ From there, I built out the analytics layer with both dimension and fact models.
 
 The monthly policy model is probably one of the clearest examples of the business value in the project. It rolls activity up to a policy-month level and brings together quotes, new business, renewals, mid-term adjustments, cancellations, lapses, premium movement, claim counts, and paid claims in one place. That creates a foundation for looking at sales trends, retention behaviour, customer activity, and claims performance over time.
 
-![Power BI Dashboard Overview](images/powerbi-overview.png)
+![Power BI Dashboard Overview](assest/images/business-events-trend.png)
 
 I also wanted the demo data to tell a story rather than just populate tables. So I seeded production-style data across 24 months with growth in sales, increasing digital acquisition, renewals, policy changes, cancellations, lapses, and claims. That makes the final reporting layer much more meaningful because it supports trend analysis and gives the visuals a realistic narrative.
 
@@ -42,7 +42,7 @@ One of the biggest takeaways from building this was how valuable it is to connec
 
 It also gave me a chance to experiment with Snowflake Cortex Analyst and Snowflake Intelligence as an alternative way of answering business questions alongside more traditional self-serve BI.
 
-![Cortex Analyst Page](images/assets/cortex-analyst.png)
+![Cortex Analyst Page](assets/images/cortex-analyst.png)
 
 ## Why I Built It This Way
 
@@ -73,7 +73,7 @@ If I were taking this straight into the next iteration, I would focus first on s
 
 ## LinkedIn Post
 
-I’ve spent some time recently building a modern insurance data platform from scratch to turn raw insurance data into something more structured and useful for reporting, analysis, and decision-making.
+I’ve spent some time recently building a modern insurance data platform from scratch to turn example raw insurance data into something more structured and useful for reporting, analysis, and decision-making.
 
 This started mainly as a learning project, but also as a way of asking myself a bigger question: if I were building an insurance analytics platform from scratch in a greenfield environment, how would I do it?
 
@@ -89,8 +89,8 @@ It is intentionally only a first iteration. There is still plenty I want to impr
 
 With a bit of time I have had recently to reset and think about what I want to build next, projects like this have been a great way to keep learning, stay sharp, and show the kind of work I want to keep doing in my next role.
 
-It also came together very quickly, with parts of the build accelerated by tools such as Codex / Claude. The direction and design were mine, but the speed these tools now enable is hard to ignore.
+It also came together quickly, with parts of the build accelerated by tools such as Codex / Claude. The direction and design were mine, but the speed these tools now enable is hard to ignore.
 
 I’ve included the high-level architecture below, and more detail on the project and code is available on GitHub: https://github.com/gwhitnell/modern-insurance-platform
 
-Thanks all and will keep you updated on my next move shortly!
+Thanks all and will keep you updated on my next move shortly....
