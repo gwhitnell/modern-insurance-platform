@@ -96,6 +96,12 @@ Create a free Snowflake account if you don't already have an account
 
 https://signup.snowflake.com/
 
+### Demo Security Note
+
+This project is intentionally set up to be easy to bootstrap locally, so the examples below use password authentication, `ACCOUNTADMIN`, and grant the project roles to a single configured user. That keeps the setup simple for a portfolio/demo project and makes it easy to switch roles while loading data and running transformations.
+
+In a more production-oriented implementation, I would tighten this considerably by separating bootstrap/admin access from runtime roles, avoiding broad admin use for dbt execution, reducing destructive privileges in production paths, and using stronger credential handling such as key-pair auth, OAuth, or secret management.
+
 Then gather:
 
 snowflake_organization_name  = "YOUR_SNOWFLAKE_ORG_NAME"
@@ -122,18 +128,23 @@ Update with your snowflake credentials
 
 `terraform apply` grants `ROLE_LOADER`, `ROLE_TRANSFORM`, and `ROLE_ANALYST` to the configured `snowflake_user`, so the setup scripts can switch roles without a separate manual grant step.
 
+That single-user role assignment is a convenience for this demo project rather than the pattern I would recommend for a production deployment.
+
 terraform init
 terraform apply
 
 ### 2. Load Sample Data
-Run the scripts in /setup:
+Run the scripts in /setup for dev step first:
 
 - 01_reset.sql
 - 02_seed_raw_data.sql
 
 If incremental required run task in snowflake which will consume resource EXECUTE TASK RAW.BUSINESS_EVENTS_TASK;
 
-Additional info for production in setup/README.md
+Additional info for when production promotion happens in setup/README.md
+
+- 03_reset_prd.sql
+- 04_seed_raw_data.sql
 
 ### 3. Run Transformations
 
