@@ -138,11 +138,11 @@ CREATE OR REPLACE TEMP TABLE TMP_PRD_POLICY_SCENARIO_FINAL AS
 SELECT
     *,
     IFF(cancelled_flag, FALSE, raw_lapse_flag) AS lapsed_flag,
-    IFF(cancelled_flag, 'CANCELLED', IFF(raw_lapse_flag, 'LAPSED', 'ACTIVE')) AS policy_status,
+    IFF(cancelled_flag, 'CANCELLED', IFF(IFF(cancelled_flag, FALSE, raw_lapse_flag), 'LAPSED', 'ACTIVE')) AS policy_status,
     CASE
         WHEN inception_date <= '2024-06-30'::DATE
              AND NOT cancelled_flag
-             AND NOT raw_lapse_flag
+             AND NOT IFF(cancelled_flag, FALSE, raw_lapse_flag)
         THEN TRUE
         ELSE FALSE
     END AS renewal_flag,
@@ -153,7 +153,12 @@ SELECT
         WHEN MOD(n, 20) IN (15, 16) AND MOD(n, 18) = 0 THEN TRUE
         WHEN MOD(n, 20) = 19 AND MOD(n, 25) = 0 THEN TRUE
         ELSE FALSE
-    END AS claim_flag
+    END AS claim_flag,
+    DATEADD(day, 95 + MOD(n, 20), inception_date) AS mta_1_date,
+    DATEADD(day, 185 + MOD(n, 25), inception_date) AS mta_2_date,
+    DATEADD(day, 120 + MOD(n, 70), inception_date) AS cancellation_date,
+    DATEADD(day, 7 + MOD(n, 14), expiry_date) AS lapse_date,
+    DATEADD(day, 1, expiry_date) AS renewal_date
 FROM TMP_PRD_POLICY_SCENARIO;
 
 INSERT INTO CUSTOMERS
@@ -274,7 +279,7 @@ UNION ALL
 SELECT
     'M1' || LPAD(TO_VARCHAR(100000 + n), 6, '0') AS event_id,
     policy_id,
-    TO_VARCHAR(DATEADD(day, 95 + MOD(n, 20), inception_date), 'YYYY-MM-DD') || 'T11:30:00Z' AS event_ts,
+    TO_VARCHAR(mta_1_date, 'YYYY-MM-DD') || 'T11:30:00Z' AS event_ts,
     'mta' AS event_type,
     IFF(MOD(n, 3) = 0, 'broker', 'call_centre') AS channel,
     TO_CHAR(
@@ -286,13 +291,18 @@ SELECT
     CURRENT_TIMESTAMP() AS ingested_at
 FROM TMP_PRD_POLICY_SCENARIO_FINAL
 WHERE mta_1_flag
+  AND (
+      (cancelled_flag AND mta_1_date < cancellation_date)
+      OR (lapsed_flag AND mta_1_date < lapse_date)
+      OR (NOT cancelled_flag AND NOT lapsed_flag)
+  )
 
 UNION ALL
 
 SELECT
     'M2' || LPAD(TO_VARCHAR(100000 + n), 6, '0') AS event_id,
     policy_id,
-    TO_VARCHAR(DATEADD(day, 185 + MOD(n, 25), inception_date), 'YYYY-MM-DD') || 'T14:15:00Z' AS event_ts,
+    TO_VARCHAR(mta_2_date, 'YYYY-MM-DD') || 'T14:15:00Z' AS event_ts,
     'mta' AS event_type,
     'call_centre' AS channel,
     TO_CHAR(ROUND(10 + MOD(n, 5) * 3.50, 2), 'FM9999990.00') AS gross_premium_change,
@@ -301,13 +311,18 @@ SELECT
     CURRENT_TIMESTAMP() AS ingested_at
 FROM TMP_PRD_POLICY_SCENARIO_FINAL
 WHERE mta_2_flag
+  AND (
+      (cancelled_flag AND mta_2_date < cancellation_date)
+      OR (lapsed_flag AND mta_2_date < lapse_date)
+      OR (NOT cancelled_flag AND NOT lapsed_flag)
+  )
 
 UNION ALL
 
 SELECT
     'CN' || LPAD(TO_VARCHAR(100000 + n), 6, '0') AS event_id,
     policy_id,
-    TO_VARCHAR(DATEADD(day, 120 + MOD(n, 70), inception_date), 'YYYY-MM-DD') || 'T15:00:00Z' AS event_ts,
+    TO_VARCHAR(cancellation_date, 'YYYY-MM-DD') || 'T15:00:00Z' AS event_ts,
     'cancellation' AS event_type,
     'call_centre' AS channel,
     '0.00' AS gross_premium_change,
@@ -322,7 +337,7 @@ UNION ALL
 SELECT
     'LP' || LPAD(TO_VARCHAR(100000 + n), 6, '0') AS event_id,
     policy_id,
-    TO_VARCHAR(DATEADD(day, 7 + MOD(n, 14), expiry_date), 'YYYY-MM-DD') || 'T08:30:00Z' AS event_ts,
+    TO_VARCHAR(lapse_date, 'YYYY-MM-DD') || 'T08:30:00Z' AS event_ts,
     'lapse' AS event_type,
     'web' AS channel,
     '0.00' AS gross_premium_change,
@@ -331,13 +346,14 @@ SELECT
     CURRENT_TIMESTAMP() AS ingested_at
 FROM TMP_PRD_POLICY_SCENARIO_FINAL
 WHERE lapsed_flag
+  AND NOT renewal_flag
 
 UNION ALL
 
 SELECT
     'RN' || LPAD(TO_VARCHAR(100000 + n), 6, '0') AS event_id,
     policy_id,
-    TO_VARCHAR(DATEADD(day, 1, expiry_date), 'YYYY-MM-DD') || 'T10:30:00Z' AS event_ts,
+    TO_VARCHAR(renewal_date, 'YYYY-MM-DD') || 'T10:30:00Z' AS event_ts,
     'renewal' AS event_type,
     'web' AS channel,
     TO_CHAR(ROUND(22 + MOD(n, 8) * 3.25, 2), 'FM9999990.00') AS gross_premium_change,
