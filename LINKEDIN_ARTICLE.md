@@ -34,7 +34,7 @@ From there, I built out the analytics layer with both dimension and fact models.
 
 The monthly policy model is probably one of the clearest examples of the business value in the project. It rolls activity up to a policy-month level and brings together quotes, new business, renewals, mid-term adjustments, cancellations, lapses, premium movement, claim counts, and paid claims in one place. That creates a foundation for looking at sales trends, retention behaviour, customer activity, and claims performance over time.
 
-![Power BI Dashboard Overview](assest/images/business-events-trend.png)
+![Power BI](assets/images/business-events-trend.png)
 
 I also wanted the demo data to tell a story rather than just populate tables. So I seeded production-style data across 24 months with growth in sales, increasing digital acquisition, renewals, policy changes, cancellations, lapses, and claims. That makes the final reporting layer much more meaningful because it supports trend analysis and gives the visuals a realistic narrative.
 
@@ -71,7 +71,7 @@ The GitHub version is there as a starting point, not a finished product. I fully
 If I were taking this straight into the next iteration, I would focus first on stronger test coverage, better production-style data, orchestration and monitoring, improved documentation, and more operational and executive-style dashboards. I would also keep exploring where AI-driven analytics can add real value.
 
 
-## LinkedIn Post
+## Shorter LinkedIn Post
 
 I’ve spent some time recently building a modern insurance data platform from scratch to turn example raw insurance data into something more structured and useful for reporting, analysis, and decision-making.
 
@@ -91,6 +91,6 @@ With a bit of time I have had recently to reset and think about what I want to b
 
 It also came together quickly, with parts of the build accelerated by tools such as Codex / Claude. The direction and design were mine, but the speed these tools now enable is hard to ignore.
 
-I’ve included the high-level architecture below, and more detail on the project and code is available on GitHub: https://github.com/gwhitnell/modern-insurance-platform
+More detail on the project and code is available on GitHub: https://github.com/gwhitnell/modern-insurance-platform/blob/main/LINKEDIN_ARTICLE.md 
 
 Thanks all and will keep you updated on my next move shortly....
