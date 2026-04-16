@@ -116,7 +116,8 @@ Admin → Accounts → Locator
 ### 0. Clone Repository
 
 git clone https://github.com/gwhitnell/modern-insurance-platform.git
-cd modern_insurance_platform
+
+cd modern-insurance-platform
 
 ### 1. Deploy Infrastructure
 
@@ -124,26 +125,27 @@ cd terraform
 
 Copy terraform.tfvars.example → terraform.tfvars
 
-Update with your snowflake credentials
+cp terraform.tfvars.example terraform.tfvars
+
+Update with your snowflake credentials and save
+
+terraform init
+
+terraform apply 
+
+answer 'yes' when prompted
 
 `terraform apply` grants `ROLE_LOADER`, `ROLE_TRANSFORM`, and `ROLE_ANALYST` to the configured `snowflake_user`, so the setup scripts can switch roles without a separate manual grant step.
 
 That single-user role assignment is a convenience for this demo project rather than the pattern I would recommend for a production deployment.
 
-terraform init
-terraform apply
-
 ### 2. Load Sample Data
-Run the scripts in /setup for dev step first:
+Run the scripts in /setup for dev step first in snowflake worksheets or snowsql:
 
-- 01_reset.sql
 - 02_seed_raw_data.sql
-
-If incremental required run task in snowflake which will consume resource EXECUTE TASK RAW.BUSINESS_EVENTS_TASK;
 
 Additional info for when production promotion happens in setup/README.md
 
-- 03_reset_prd.sql
 - 04_seed_raw_data.sql
 
 ### 3. Run Transformations
@@ -187,20 +189,22 @@ modern_insurance_platform:
 
 How to use it:
 
+Ensure virtual environment activated
+
+source venv/bin/activate
+
+cd modern_insurance_platform/
+
 - `dbt debug` uses the default target from `target: dev`
-- `dbt run` builds into `DEV_MODERN_INSURANCE_PLATFORM`
-- `dbt run --target prd` builds into `PRD_MODERN_INSURANCE_PLATFORM`
+- `dbt deps` builds dependencies
+- `dbt run --full-refresh` builds into `DEV_MODERN_INSURANCE_PLATFORM`
+- `dbt test` runs tests
+
+Ensure you are happy dev has run successfully before moving on to production, ensure data setup/ has been run for production
+
+- `dbt run --target prd --full-refresh` builds into `PRD_MODERN_INSURANCE_PLATFORM`
 - `dbt test --target prd` runs tests against PRD
 
-Check your local connection:
-
-```bash
-dbt debug
-dbt debug --target prd
-```
-
-dbt run
-dbt test
 
 ### Option 2: Snowflake Native dbt (Recommended) -- there are some limitations to trial account because external access is disabled
 
