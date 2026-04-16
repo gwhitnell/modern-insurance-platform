@@ -78,7 +78,18 @@ Check:
 
 ### Install Python And dbt
 
-Create a virtual environment and install dbt:
+Install Python 3.10+ first:
+
+Ubuntu / WSL:
+`sudo apt update && sudo apt install -y python3 python3-venv python3-pip`
+
+macOS:
+`brew install python@3.10`
+
+Check:
+`python3 --version`
+
+Then create a virtual environment and install dbt:
 
 ```bash
 python3 -m venv venv
@@ -204,7 +215,6 @@ Ensure you are happy dev has run successfully before moving on to production, en
 
 - `dbt run --target prd --full-refresh` builds into `PRD_MODERN_INSURANCE_PLATFORM`
 - `dbt test --target prd` runs tests against PRD
-
 
 ### Option 2: Snowflake Native dbt (Recommended) -- there are some limitations to trial account because external access is disabled
 
