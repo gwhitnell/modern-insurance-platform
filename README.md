@@ -211,7 +211,7 @@ cd modern_insurance_platform/
 - `dbt run --full-refresh` builds into `DEV_MODERN_INSURANCE_PLATFORM`
 - `dbt test` runs tests
 
-Ensure you are happy dev has run successfully before moving on to production, ensure data setup/ has been run for production
+Ensure you are happy development has run successfully before moving on to production, ensure data setup/ has been run for production
 
 - `dbt run --target prd --full-refresh` builds into `PRD_MODERN_INSURANCE_PLATFORM`
 - `dbt test --target prd` runs tests against PRD
