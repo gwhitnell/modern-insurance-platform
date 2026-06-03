@@ -23,6 +23,27 @@ This platform is built using modern data engineering best practices:
 | ROLE_TRANSFORM  | Full access to CLEAN & ANALYTICS |
 | ROLE_ANALYST    | Read-only access to ANALYTICS |
 
+## Customer Service Search App
+
+This repo includes a Snowflake-native Streamlit app for customer service users
+to search for customers, policies, and claims using verified customer details.
+
+Run it after Terraform, PRD seed data, and the PRD dbt build are complete:
+
+1. Create the app schema and stage:
+   `setup/06_streamlit_customer_service_search.sql`
+
+2. Upload `apps/customer_service_search.py` to:
+   `@PRD_MODERN_INSURANCE_PLATFORM.APP.STREAMLIT_STAGE/customer_service_search`
+
+3. Create the Streamlit object:
+   `setup/07_create_streamlit_customer_service_search.sql`
+
+4. In Snowsight, switch to `ROLE_ANALYST`, open Streamlit, and select:
+   `Customer Service Search`
+
+The app runs inside Snowflake and uses the PRD `ANALYTICS` marts by default.
+
 ## ⚙️ Tech Stack
 
 - Git (Source Control)

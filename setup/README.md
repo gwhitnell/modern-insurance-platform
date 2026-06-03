@@ -25,3 +25,29 @@ This PRD seed creates:
 - 1,320 sold policies
 - Cleaner customer, policy, claim, and event records than the DEV demo seed
 - A trend story with growth in sales volume, increased digital acquisition, renewals, MTAs, cancellations, lapses, and claims
+
+## Snowflake Intelligence
+
+After the PRD data has been loaded and dbt has built the PRD marts, run:
+
+1. Build PRD marts
+   run: `dbt run --target prd --full-refresh`
+
+2. Create the semantic view and Snowflake Intelligence Agent
+   run: `05_snowflake_intelligence.sql`
+
+3. Open Snowflake Intelligence, switch to `ROLE_ANALYST`, and select:
+   `Insurance Performance`
+
+The script creates this Agent object:
+`SNOWFLAKE_INTELLIGENCE.AGENTS.INSURANCE_PERFORMANCE_AGENT`
+
+The Agent is backed by semantic view:
+`PRD_MODERN_INSURANCE_PLATFORM.ANALYTICS.INSURANCE_PERFORMANCE`
+
+Suggested first questions:
+
+- What was total net premium movement by product last month?
+- Show claims paid by product over time.
+- Which product has the highest cancellation volume?
+- Compare new business and renewals by month.
