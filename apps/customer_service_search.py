@@ -1,5 +1,3 @@
-from datetime import date
-
 import pandas as pd
 import streamlit as st
 from snowflake.snowpark.context import get_active_session
@@ -25,6 +23,7 @@ def build_search_sql(filters: dict[str, object]):
     conditions = []
     params: list[object] = []
     limit = int(filters["limit"])
+    condition_joiner = " or " if filters["match_mode"] == "Any populated field" else " and "
 
     if filters["first_name"]:
         if filters["exact_name"]:
@@ -43,7 +42,7 @@ def build_search_sql(filters: dict[str, object]):
             params.append(f"%{filters['last_name']}%")
 
     if filters["date_of_birth"]:
-        conditions.append("c.date_of_birth = ?")
+        conditions.append("c.date_of_birth = try_to_date(?)")
         params.append(filters["date_of_birth"])
 
     if filters["email"]:
@@ -51,14 +50,18 @@ def build_search_sql(filters: dict[str, object]):
         params.append(f"%{filters['email']}%")
 
     if filters["customer_id"]:
-        conditions.append("upper(c.customer_id) = upper(?)")
-        params.append(filters["customer_id"])
+        conditions.append("upper(c.customer_id) like upper(?)")
+        params.append(f"%{filters['customer_id']}%")
 
     if filters["policy_id"]:
-        conditions.append("upper(p.policy_id) = upper(?)")
-        params.append(filters["policy_id"])
+        conditions.append("upper(p.policy_id) like upper(?)")
+        params.append(f"%{filters['policy_id']}%")
 
-    where_clause = " and ".join(conditions)
+    if filters["claim_id"]:
+        conditions.append("upper(cl.claim_id) like upper(?)")
+        params.append(f"%{filters['claim_id']}%")
+
+    where_clause = condition_joiner.join(conditions)
 
     sql = f"""
         select
@@ -110,6 +113,7 @@ def empty_filter_state(filters: dict[str, object]) -> bool:
         "email",
         "customer_id",
         "policy_id",
+        "claim_id",
     ]
     return not any(filters[field] for field in fields)
 
@@ -139,31 +143,33 @@ with st.form("customer_search"):
     row_one = st.columns(4)
     first_name = row_one[0].text_input("First name")
     last_name = row_one[1].text_input("Last name")
-    date_of_birth = row_one[2].date_input(
-        "Date of birth",
-        value=None,
-        min_value=date(1900, 1, 1),
-        max_value=date.today(),
-    )
+    date_of_birth = row_one[2].text_input("Date of birth", placeholder="YYYY-MM-DD")
     email = row_one[3].text_input("Email")
 
-    row_two = st.columns([1, 1, 1])
+    row_two = st.columns([1, 1, 1, 1])
     customer_id = row_two[0].text_input("Customer ID")
     policy_id = row_two[1].text_input("Policy ID")
-    exact_name = row_two[2].checkbox("Exact name match", value=False)
+    claim_id = row_two[2].text_input("Claim ID")
+    exact_name = row_two[3].checkbox("Exact name match", value=False)
 
-    row_three = st.columns([1, 3])
-    limit = row_three[0].number_input("Result limit", min_value=10, max_value=500, value=100, step=10)
-    submitted = row_three[1].form_submit_button("Search", use_container_width=True)
+    row_three = st.columns([2, 1, 3])
+    match_mode = row_three[0].selectbox(
+        "Match mode",
+        ["Any populated field", "All populated fields"],
+    )
+    limit = row_three[1].number_input("Result limit", min_value=10, max_value=500, value=100, step=10)
+    submitted = row_three[2].form_submit_button("Search", use_container_width=True)
 
 filters = {
     "first_name": first_name.strip(),
     "last_name": last_name.strip(),
-    "date_of_birth": date_of_birth,
+    "date_of_birth": date_of_birth.strip(),
     "email": email.strip(),
     "customer_id": customer_id.strip(),
     "policy_id": policy_id.strip(),
+    "claim_id": claim_id.strip(),
     "exact_name": exact_name,
+    "match_mode": match_mode,
     "limit": int(limit),
 }
 
@@ -221,13 +227,13 @@ if submitted:
     )
 
     with customer_tab:
-        st.dataframe(customers, hide_index=True, use_container_width=True)
+        st.dataframe(customers, use_container_width=True)
 
     with policy_tab:
-        st.dataframe(policies, hide_index=True, use_container_width=True)
+        st.dataframe(policies, use_container_width=True)
 
     with claim_tab:
-        st.dataframe(claims, hide_index=True, use_container_width=True)
+        st.dataframe(claims, use_container_width=True)
 
     with raw_tab:
-        st.dataframe(results, hide_index=True, use_container_width=True)
+        st.dataframe(results.reset_index(drop=True), use_container_width=True)
