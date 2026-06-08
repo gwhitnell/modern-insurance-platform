@@ -42,8 +42,14 @@ After the PRD data has been loaded and dbt has built the PRD marts, run:
 The script creates this Agent object:
 `SNOWFLAKE_INTELLIGENCE.AGENTS.INSURANCE_PERFORMANCE_AGENT`
 
-The Agent is backed by semantic view:
-`PRD_MODERN_INSURANCE_PLATFORM.ANALYTICS.INSURANCE_PERFORMANCE`
+The Agent is backed by two semantic views:
+
+- `PRD_MODERN_INSURANCE_PLATFORM.ANALYTICS.INSURANCE_PERFORMANCE`
+- `PRD_MODERN_INSURANCE_PLATFORM.ANALYTICS.CUSTOMER_SERVICE_LOOKUP`
+
+`INSURANCE_PERFORMANCE` handles aggregate performance analysis.
+`CUSTOMER_SERVICE_LOOKUP` handles bounded customer service searches over the
+same demo customer, policy, and claim marts used by the Streamlit app.
 
 Suggested first questions:
 
@@ -51,3 +57,6 @@ Suggested first questions:
 - Show claims paid by product over time.
 - Which product has the highest cancellation volume?
 - Compare new business and renewals by month.
+- Find customers called Ruby.
+- Look up policy P100123.
+- Show claim CL200126.
