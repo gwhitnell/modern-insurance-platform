@@ -15,6 +15,13 @@ This platform is built using modern data engineering best practices:
 - **Environment Separation**
   - DEV and PRD databases for safe deployment
 
+## 📁 Project Layout
+
+- `dbt/` contains the dbt project, including `dbt_project.yml`, models, macros, seeds, snapshots, analyses, tests, package files, and dbt-generated artifacts.
+- `terraform/` contains Snowflake infrastructure as code.
+- `setup/` contains Snowflake SQL setup and seed scripts.
+- `apps/` contains the Snowflake Streamlit application.
+
 ## 🔐 Roles & Responsibilities
 
 | Role            | Access Level |
@@ -168,7 +175,7 @@ Run dbt locally using dbt-snowflake.
 
 Create a local dbt profile at `~/.dbt/profiles.yml`.
 
-This project uses the dbt profile name `modern_insurance_platform` from `dbt_project.yml`, so your local `profiles.yml` must contain a matching entry.
+This project uses the dbt profile name `modern_insurance_platform` from `dbt/dbt_project.yml`, so your local `profiles.yml` must contain a matching entry.
 
 Example:
 
@@ -200,11 +207,11 @@ modern_insurance_platform:
 
 How to use it:
 
-Ensure virtual environment activated
+From the repository root, ensure the virtual environment is activated:
 
 source venv/bin/activate
 
-cd modern_insurance_platform/
+cd dbt/
 
 - `dbt debug` uses the default target from `target: dev`
 - `dbt deps` builds dependencies

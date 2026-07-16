@@ -31,7 +31,7 @@ This PRD seed creates:
 After the PRD data has been loaded and dbt has built the PRD marts, run:
 
 1. Build PRD marts
-   run: `dbt run --target prd --full-refresh`
+   from the repository root, run: `cd dbt && dbt run --target prd --full-refresh`
 
 2. Create the semantic view and Snowflake Intelligence Agent
    run: `05_snowflake_intelligence.sql`

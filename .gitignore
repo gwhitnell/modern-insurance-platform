@@ -9,9 +9,9 @@ tfplan
 terraform.tfvars
 
 # dbt
-target/
-logs/
-dbt_packages/
+/dbt/target/
+/dbt/logs/
+/dbt/dbt_packages/
 
 # Python
 venv/
@@ -19,9 +19,6 @@ __pycache__/
 
 # OS
 .DS_Store
-
-# Tests
-tests/
 
 # LLM
 .codex
