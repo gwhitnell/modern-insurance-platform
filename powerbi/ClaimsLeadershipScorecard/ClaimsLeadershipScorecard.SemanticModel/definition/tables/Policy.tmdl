@@ -1,0 +1,35 @@
+/// Policy attributes used to segment claim results, at one row per policy identifier.
+table Policy
+
+	/// Relationship key retained for model joins.
+	column 'Policy ID'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: Policy ID
+
+	/// Insurance product associated with the policy.
+	column Product
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Product
+
+	/// Current policy lifecycle status.
+	column 'Policy Status'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Policy Status
+
+	partition Policy = m
+		mode: import
+		source =
+			let
+				Source = Snowflake.Databases(#"SnowflakeServer", #"SnowflakeWarehouse", [Implementation="2.0"]),
+				Database = Source{[Name=#"SnowflakeDatabase"]}[Data],
+				Schema = Database{[Name=#"SnowflakeSchema", Kind="Schema"]}[Data],
+				PolicySource = Schema{[Name="DIM_POLICY", Kind="Table"]}[Data],
+				#"Selected Columns" = Table.SelectColumns(PolicySource, {"POLICY_ID", "PRODUCT_CODE", "POLICY_STATUS"}),
+				#"Renamed Columns" = Table.RenameColumns(#"Selected Columns", {{"POLICY_ID", "Policy ID"}, {"PRODUCT_CODE", "Product"}, {"POLICY_STATUS", "Policy Status"}}),
+				#"Changed Types" = Table.TransformColumnTypes(#"Renamed Columns", {{"Policy ID", type text}, {"Product", type text}, {"Policy Status", type text}})
+			in
+				#"Changed Types"

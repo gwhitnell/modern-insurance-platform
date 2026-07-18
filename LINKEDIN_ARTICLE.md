@@ -34,11 +34,21 @@ From there, I built out the analytics layer with both dimension and fact models.
 
 The monthly policy model is probably one of the clearest examples of the business value in the project. It rolls activity up to a policy-month level and brings together quotes, new business, renewals, mid-term adjustments, cancellations, lapses, premium movement, claim counts, and paid claims in one place. That creates a foundation for looking at sales trends, retention behaviour, customer activity, and claims performance over time.
 
+I have now taken that reporting layer one step further by building a file-based Power BI claims leadership scorecard directly over the Snowflake analytics marts. The report is designed for a recurring claims review and brings the most important measures onto a single page: total claims, total paid, average paid per claim, open claims, closure rate, and average reporting lag. Supporting visuals show paid value and claim volume over time, together with the products and claim statuses driving the result.
+
+I deliberately kept the business meaning precise. The source currently contains paid-to-date claim value, but it does not contain incurred loss or outstanding reserves. The scorecard therefore does not present paid value as an exposure or reserve measure. That distinction sounds small, but it is exactly the kind of semantic clarity that determines whether a dashboard can be trusted.
+
+The report is stored as a Power BI Project rather than a single opaque PBIX file. Its TMDL semantic model, DAX measures, PBIR visual definitions, theme, relationships, and Snowflake Power Query partitions are all visible in Git. I also created a deterministic Node.js generator and validate the report using Microsoft’s Power BI report-authoring CLI. That makes the reporting layer much easier to inspect, reproduce, review, and evolve alongside the warehouse code.
+
+![Power BI Claims Leadership Scorecard](assets/images/claims-leadership-scorecard.png)
+
 ![Power BI](assets/images/business-events-trend.png)
 
 I also wanted the demo data to tell a story rather than just populate tables. So I seeded production-style data across 24 months with growth in sales, increasing digital acquisition, renewals, policy changes, cancellations, lapses, and claims. That makes the final reporting layer much more meaningful because it supports trend analysis and gives the visuals a realistic narrative.
 
-One of the biggest takeaways from building this was how valuable it is to connect infrastructure, data modelling, and business reporting into one coherent flow. It is one thing to clean a dataset. It is another to design the platform, control access, model the business properly, and then surface it in a way that decision-makers can actually use.
+One of the biggest takeaways from building this was how valuable it is to connect infrastructure, data modelling, and business reporting into one coherent flow. It is one thing to clean a dataset. It is another to design the platform, control access, model the business properly, define trusted measures, and then surface them in a way that decision-makers can actually use.
+
+Building the Power BI layer as code reinforced another lesson: structural validation and rendered validation are different things. The generated PBIR passed schema validation, but opening it in Desktop exposed a multi-value KPI card that did not render as intended. Replacing it with six independently bound cards made the layout more robust. That feedback loop between code validation and visual inspection is now part of how I think about BI engineering.
 
 It also gave me a chance to experiment with Snowflake Cortex Analyst and Snowflake Intelligence as an alternative way of answering business questions alongside more traditional self-serve BI.
 
@@ -59,7 +69,8 @@ That was really the point of this project for me. I wanted to show how I think a
 - Transformation and modelling in dbt
 - Business-focused fact and dimension design
 - Incremental processing patterns
-- Reporting-ready outputs for BI tools like Power BI
+- A source-controlled Power BI semantic model and claims leadership scorecard
+- Reproducible PBIP/PBIR generation and schema validation
 - AI Experimentation with Cortex Analyst and Snowflake Intelligence
 
 ## What Comes Next
@@ -68,7 +79,7 @@ Looking back, I’m really happy with how much this project pulled together. It 
 
 The GitHub version is there as a starting point, not a finished product. I fully expect to improve most areas of the project over time, whether that is testing, orchestration, monitoring, documentation, reporting depth, or how far I push the production-style design. But I would always rather share a strong first iteration and keep building from there than wait for a version that feels perfectly finished.
 
-If I were taking this straight into the next iteration, I would focus first on stronger test coverage, better production-style data, orchestration and monitoring, improved documentation, and more operational and executive-style dashboards. I would also keep exploring where AI-driven analytics can add real value.
+If I were taking this straight into the next iteration, I would focus first on stronger test coverage, better production-style data, orchestration and monitoring, and deeper claims measures such as incurred loss, outstanding reserves, claim cause, severity, handler ownership, and service-level performance. I would also keep exploring where AI-driven analytics can add real value.
 
 
 ## Shorter LinkedIn Post
@@ -81,7 +92,11 @@ So I built my first answer to that.
 
 At a high level, it brings together customer, policy, claims, and business activity data and turns it into something structured and usable for reporting, analysis, and decision-making.
 
-I used Snowflake, dbt, Terraform, SQL, Git, Power BI, Snowflake Intelligence, and Cortex Analyst to build the first iteration.
+I used Snowflake, dbt, Terraform, SQL, Git, Power BI Projects, Snowflake Intelligence, and Cortex Analyst to build the first iteration.
+
+The latest addition is a source-controlled Power BI claims leadership scorecard running against the Snowflake analytics marts. It combines the core claims KPIs with monthly trends and product/status drivers on one page, while keeping the semantic distinction between paid-to-date value and reserves explicit.
+
+Instead of treating the report as an opaque PBIX file, I built the semantic model and report in PBIP/PBIR format, generated the files reproducibly, and validated the report definition with Microsoft’s authoring tooling before opening it in Desktop.
 
 I’ve also made it available on GitHub so people can explore it, experiment with it, and follow how it develops.
 

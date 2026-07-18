@@ -1,0 +1,12 @@
+relationship 'Claims to Policy'
+	fromColumn: Claims.'Policy ID'
+	toColumn: Policy.'Policy ID'
+
+relationship 'Claims Loss Date to Date'
+	fromColumn: Claims.'Loss Date'
+	toColumn: Date.Date
+
+relationship 'Claims Reported Date to Date'
+	isActive: false
+	fromColumn: Claims.'Reported Date'
+	toColumn: Date.Date

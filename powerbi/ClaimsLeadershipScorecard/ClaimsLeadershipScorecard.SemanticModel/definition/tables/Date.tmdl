@@ -1,0 +1,65 @@
+/// Contiguous calendar used for loss-date reporting and time intelligence.
+table Date
+	dataCategory: Time
+
+	/// Calendar date at daily grain.
+	column Date
+		dataType: dateTime
+		formatString: dd MMM yyyy
+		summarizeBy: none
+		sourceColumn: Date
+
+	/// Calendar year used by the leadership slicer.
+	column Year
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: Year
+
+	/// Calendar month name.
+	column Month
+		dataType: string
+		sortByColumn: 'Month Number'
+		summarizeBy: none
+		sourceColumn: Month
+
+	/// Calendar month number used to sort month names.
+	column 'Month Number'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: Month Number
+
+	/// First day of the month for chronological chart axes.
+	column 'Year Month'
+		dataType: dateTime
+		formatString: MMM yyyy
+		summarizeBy: none
+		sourceColumn: Year Month
+
+	hierarchy 'Calendar Hierarchy'
+		level Year
+			column: Year
+		level Month
+			column: Month
+		level Date
+			column: Date
+
+	partition Date = m
+		mode: import
+		source =
+			let
+				Source = Snowflake.Databases(#"SnowflakeServer", #"SnowflakeWarehouse", [Implementation="2.0"]),
+				Database = Source{[Name=#"SnowflakeDatabase"]}[Data],
+				Schema = Database{[Name=#"SnowflakeSchema", Kind="Schema"]}[Data],
+				ClaimsSource = Schema{[Name="FCT_CLAIMS", Kind="Table"]}[Data],
+				MinDate = Date.StartOfYear(Date.From(List.Min(ClaimsSource[LOSS_DATE]))),
+				MaxDate = Date.EndOfYear(Date.From(List.Max(ClaimsSource[LOSS_DATE]))),
+				Dates = List.Dates(MinDate, Duration.Days(MaxDate - MinDate) + 1, #duration(1, 0, 0, 0)),
+				#"Converted to Table" = Table.FromList(Dates, Splitter.SplitByNothing(), {"Date"}),
+				#"Changed Date Type" = Table.TransformColumnTypes(#"Converted to Table", {{"Date", type date}}),
+				#"Added Year" = Table.AddColumn(#"Changed Date Type", "Year", each Date.Year([Date]), Int64.Type),
+				#"Added Month" = Table.AddColumn(#"Added Year", "Month", each Date.MonthName([Date], "en-GB"), type text),
+				#"Added Month Number" = Table.AddColumn(#"Added Month", "Month Number", each Date.Month([Date]), Int64.Type),
+				#"Added Year Month" = Table.AddColumn(#"Added Month Number", "Year Month", each Date.StartOfMonth([Date]), type date)
+			in
+				#"Added Year Month"

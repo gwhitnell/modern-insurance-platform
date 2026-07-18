@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Claims Leadership Scorecard"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "4c61696d-7352-6570-6f72-740000000001"
+  }
+}
