@@ -28,21 +28,51 @@ This PRD seed creates:
 
 ## Snowflake Intelligence
 
-After the PRD data has been loaded and dbt has built the PRD marts, run:
+The Snowflake semantic-view definitions are maintained in
+`dbt/macros/create_semantic_views.sql`. They resolve their source relations from
+the selected dbt target, so the same operations can be used in DEV and PRD.
+
+After the data has been loaded and dbt has built the marts, run from the
+repository root:
+
+1. Create or update all three semantic views in DEV
+   `dbt run-operation create_semantic_views --project-dir dbt --target dev`
+
+2. Check the DEV views in Snowsight, Cortex Analyst, or Snowflake Intelligence
+
+3. Create or update all three semantic views in PRD
+   `dbt run-operation create_semantic_views --project-dir dbt --target prd`
+
+The individual operations are also available when only one view should change:
+
+- `create_claims_semantic_view`
+- `create_insurance_performance_semantic_view`
+- `create_customer_service_lookup_semantic_view`
+
+The operations create these views in the selected target's analytics schema:
+
+- `CLAIMS_SEMANTIC_VIEW`
+- `INSURANCE_PERFORMANCE`
+- `CUSTOMER_SERVICE_LOOKUP`
+
+For the existing PRD Snowflake Intelligence Agent setup:
 
 1. Build PRD marts
    from the repository root, run: `cd dbt && dbt run --target prd --full-refresh`
 
-2. Create the semantic view and Snowflake Intelligence Agent
-   run: `05_snowflake_intelligence.sql`
+2. Create the PRD semantic views with the dbt operation above
 
-3. Open Snowflake Intelligence, switch to `ROLE_ANALYST`, and select:
+3. Run the grants and Snowflake Intelligence Agent portions of
+   `05_snowflake_intelligence.sql`. The semantic-view DDL retained in that file
+   is legacy bootstrap SQL; the dbt macros are the canonical definitions.
+
+4. Open Snowflake Intelligence, switch to `ROLE_ANALYST`, and select:
    `Insurance Performance`
 
 The script creates this Agent object:
 `SNOWFLAKE_INTELLIGENCE.AGENTS.INSURANCE_PERFORMANCE_AGENT`
 
-The Agent is backed by two semantic views:
+The existing Agent is backed by two semantic views:
 
 - `PRD_MODERN_INSURANCE_PLATFORM.ANALYTICS.INSURANCE_PERFORMANCE`
 - `PRD_MODERN_INSURANCE_PLATFORM.ANALYTICS.CUSTOMER_SERVICE_LOOKUP`
@@ -50,6 +80,10 @@ The Agent is backed by two semantic views:
 `INSURANCE_PERFORMANCE` handles aggregate performance analysis.
 `CUSTOMER_SERVICE_LOOKUP` handles bounded customer service searches over the
 same demo customer, policy, and claim marts used by the Streamlit app.
+
+`CLAIMS_SEMANTIC_VIEW` is the claims-focused model aligned with
+`dbt/models/marts/claims_sematic.yml`; add it to an Agent as another Cortex
+Analyst tool when you want the claims scorecard measures exposed directly.
 
 Suggested first questions:
 

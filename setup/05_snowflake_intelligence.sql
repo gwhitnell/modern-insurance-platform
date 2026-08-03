@@ -9,6 +9,13 @@
 -- Purpose:
 --   Creates Snowflake native semantic views that Cortex Analyst can use as
 --   structured-data tools inside a Snowflake Intelligence Agent.
+--
+-- Canonical semantic-view definitions now live in:
+--   dbt/macros/create_semantic_views.sql
+-- Run them for the required environment before this Agent/grant bootstrap:
+--   dbt run-operation create_semantic_views --project-dir dbt --target dev
+--   dbt run-operation create_semantic_views --project-dir dbt --target prd
+-- The DDL below is retained as a PRD bootstrap/reference copy.
 ------------------------------------------------------------------------------
 
 USE ROLE ACCOUNTADMIN;
