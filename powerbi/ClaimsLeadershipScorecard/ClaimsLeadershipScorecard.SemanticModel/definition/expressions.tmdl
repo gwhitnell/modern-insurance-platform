@@ -1,0 +1,20 @@
+expression SnowflakeServer = "DBSKDCV-OV11805.snowflakecomputing.com" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 25bc6a99-2c82-48fd-9e2f-4ec4a1ad478f
+
+	annotation PBI_ResultType = Text
+
+expression SnowflakeWarehouse = "MODERN_INSURANCE_PLATFORM_WH" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 2524ed28-3e77-4ba3-b72a-17573b53094a
+
+	annotation PBI_ResultType = Text
+
+expression SnowflakeDatabase = "PRD_MODERN_INSURANCE_PLATFORM" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 99b8d563-c15b-4843-8093-b76cbee13bf7
+
+	annotation PBI_ResultType = Text
+
+expression SnowflakeSchema = "ANALYTICS" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 55ddcdee-b80b-4ea3-90e4-7cb7df685141
+
+	annotation PBI_ResultType = Text
+

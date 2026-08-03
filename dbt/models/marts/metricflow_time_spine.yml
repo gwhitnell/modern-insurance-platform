@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: metricflow_time_spine
+    description: "Daily calendar used by MetricFlow for time-aware claims metrics."
+    time_spine:
+      standard_granularity_column: date_day
+    columns:
+      - name: date_day
+        description: "One calendar date per row."
+        granularity: day
+        data_tests:
+          - unique
+          - not_null

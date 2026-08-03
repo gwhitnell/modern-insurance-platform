@@ -1,4 +1,3 @@
-database ClaimsLeadershipScorecard
+database
 	compatibilityLevel: 1702
-	compatibilityMode: powerBI
-	language: 2057
+

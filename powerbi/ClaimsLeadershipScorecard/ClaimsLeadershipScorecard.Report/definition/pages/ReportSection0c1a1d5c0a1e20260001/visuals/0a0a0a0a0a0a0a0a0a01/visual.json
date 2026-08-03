@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
   "name": "0a0a0a0a0a0a0a0a0a01",
   "position": {
     "x": 32,
@@ -21,14 +21,13 @@
                   {
                     "value": "Motor currently drives 76% of paid claims",
                     "textStyle": {
+                      "fontWeight": "bold",
                       "fontFamily": "Segoe UI Semibold",
                       "fontSize": "30px",
-                      "color": "#0F172A",
-                      "fontWeight": "bold"
+                      "color": "#0f172a"
                     }
                   }
-                ],
-                "horizontalTextAlignment": "left"
+                ]
               }
             ]
           }

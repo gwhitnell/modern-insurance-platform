@@ -10,3 +10,4 @@ relationship 'Claims Reported Date to Date'
 	isActive: false
 	fromColumn: Claims.'Reported Date'
 	toColumn: Date.Date
+

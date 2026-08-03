@@ -16,13 +16,19 @@ locals {
 }
 
 resource "snowflake_warehouse" "platform_wh" {
-  name                = var.warehouse_name
-  warehouse_size      = "XSMALL"
-  warehouse_type      = "STANDARD"
-  auto_suspend        = 60
-  auto_resume         = true
-  initially_suspended = true
-  comment             = "Primary warehouse for Modern Insurance Platform demo."
+  name                                = var.warehouse_name
+  warehouse_size                      = "XSMALL"
+  warehouse_type                      = "STANDARD"
+  auto_suspend                        = 60
+  auto_resume                         = true
+  initially_suspended                 = true
+  comment                             = "Primary warehouse for Modern Insurance Platform demo."
+  enable_query_acceleration           = true
+  query_acceleration_max_scale_factor = 2
+  generation                          = "2"
+  min_cluster_count                   = 1
+  max_cluster_count                   = 1
+  scaling_policy                      = "STANDARD"
 }
 
 resource "snowflake_database" "env_db" {
@@ -39,8 +45,9 @@ resource "snowflake_schema" "layer_schema" {
   database = each.value.database
   name     = each.value.schema
 
-  comment      = "Managed by Terraform (${each.key})."
-  is_transient = false
+  comment             = "Managed by Terraform (${each.key})."
+  is_transient        = false
+  with_managed_access = false
 
   depends_on = [snowflake_database.env_db]
 }

@@ -1,0 +1,128 @@
+version: 2
+
+semantic_models:
+  - name: claims
+    description: |
+      Claims semantic model at one row per claim. Paid values are
+      paid-to-date and must not be interpreted as incurred loss or reserve.
+    model: ref('fct_claims')
+    defaults:
+      agg_time_dimension: loss_date
+
+    entities:
+      - name: claim
+        type: primary
+        expr: claim_id
+      - name: policy
+        type: foreign
+        expr: policy_id
+      - name: customer
+        type: foreign
+        expr: customer_nk
+
+    dimensions:
+      - name: loss_date
+        type: time
+        type_params:
+          time_granularity: day
+      - name: reported_date
+        type: time
+        type_params:
+          time_granularity: day
+      - name: claim_status
+        type: categorical
+      - name: source_system
+        type: categorical
+
+    measures:
+      - name: total_claims
+        description: Distinct claims in the selected context.
+        expr: claim_id
+        agg: count_distinct
+      - name: total_paid
+        description: Paid-to-date claim value; not incurred loss or reserve.
+        expr: paid_amount
+        agg: sum
+      - name: open_claims
+        description: Distinct claims whose current lifecycle status is open.
+        expr: case when claim_status = 'OPEN' then claim_id end
+        agg: count_distinct
+      - name: closed_claims
+        description: Distinct claims whose current lifecycle status is closed.
+        expr: case when claim_status = 'CLOSED' then claim_id end
+        agg: count_distinct
+      - name: average_reporting_lag_days
+        description: Mean whole-day interval between loss and initial report.
+        expr: reporting_lag_days
+        agg: average
+
+  - name: claims_policy
+    description: Policy attributes used to segment claims metrics.
+    model: ref('dim_policy')
+
+    entities:
+      - name: policy
+        type: primary
+        expr: policy_id
+      - name: customer
+        type: foreign
+        expr: customer_nk
+
+    dimensions:
+      - name: product
+        type: categorical
+        expr: product_code
+      - name: policy_status
+        type: categorical
+
+metrics:
+  - name: total_claims
+    label: Total Claims
+    description: Distinct claims in the selected context.
+    type: simple
+    type_params:
+      measure: total_claims
+
+  - name: total_paid
+    label: Total Paid
+    description: Paid-to-date claim value; not incurred loss or reserve.
+    type: simple
+    type_params:
+      measure: total_paid
+
+  - name: open_claims
+    label: Open Claims
+    description: Claims whose current lifecycle status is open.
+    type: simple
+    type_params:
+      measure: open_claims
+
+  - name: closed_claims
+    label: Closed Claims
+    description: Claims whose current lifecycle status is closed.
+    type: simple
+    type_params:
+      measure: closed_claims
+
+  - name: average_reporting_lag_days
+    label: Average Reporting Lag Days
+    description: Mean whole-day interval between loss and initial report.
+    type: simple
+    type_params:
+      measure: average_reporting_lag_days
+
+  - name: average_paid_per_claim
+    label: Average Paid per Claim
+    description: Paid-to-date value divided by distinct claim count.
+    type: ratio
+    type_params:
+      numerator: total_paid
+      denominator: total_claims
+
+  - name: closure_rate
+    label: Closure Rate
+    description: Share of claims whose current lifecycle status is closed.
+    type: ratio
+    type_params:
+      numerator: closed_claims
+      denominator: total_claims

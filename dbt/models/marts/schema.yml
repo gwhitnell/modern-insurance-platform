@@ -178,6 +178,9 @@ models:
       - name: reported_date
         description: "Date claim was reported."
 
+      - name: reporting_lag_days
+        description: "Whole-day interval between the loss date and initial report date."
+
       - name: claim_status
         description: "Current claim lifecycle status."
         tests:

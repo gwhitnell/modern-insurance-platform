@@ -11,6 +11,21 @@
       "type": "RegisteredResources"
     }
   },
+  "objects": {
+    "outspacePane": [
+      {
+        "properties": {
+          "expanded": {
+            "expr": {
+              "Literal": {
+                "Value": "false"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
   "resourcePackages": [
     {
       "name": "RegisteredResources",
@@ -25,6 +40,7 @@
     }
   ],
   "settings": {
-    "useStylableVisualContainerHeader": true
+    "useStylableVisualContainerHeader": true,
+    "useEnhancedTooltips": false
   }
 }

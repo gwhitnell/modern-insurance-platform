@@ -28,6 +28,7 @@ select
     p.customer_nk,
     c.loss_date,
     c.reported_date,
+    datediff('day', c.loss_date, c.reported_date) as reporting_lag_days,
     c.claim_status,
     c.paid_amount,
     c.source_system,
