@@ -1,63 +1,75 @@
 /// Claim activity at one row per claim identifier.
 table Claims
+	lineageTag: dfb89112-aee7-491d-be83-a6bff1c3e389
 
 	/// Distinct claims in the current filter context.
 	measure 'Total Claims' = DISTINCTCOUNT('Claims'[Claim ID])
 		formatString: #,##0
 		displayFolder: Leadership KPIs
+		lineageTag: 5b221141-9b8b-4d0d-8b65-2197267252b7
 
 	/// Paid-to-date claim value; this is not incurred loss or outstanding reserve.
 	measure 'Total Paid' = SUM('Claims'[Paid Amount])
 		formatString: £#,##0
 		displayFolder: Leadership KPIs
+		lineageTag: becf7665-ca6d-49c7-af5e-c0ca889c1f37
 
 	/// Average paid-to-date value for claims in context.
 	measure 'Average Paid per Claim' = DIVIDE([Total Paid], [Total Claims])
 		formatString: £#,##0
 		displayFolder: Leadership KPIs
+		lineageTag: 74d2850d-3931-4b87-8040-cc4e82e6b67a
 
 	/// Claims whose current lifecycle status is open.
 	measure 'Open Claims' = CALCULATE([Total Claims], KEEPFILTERS('Claims'[Claim Status] = "OPEN"))
 		formatString: #,##0
 		displayFolder: Leadership KPIs
+		lineageTag: e95e3c10-7336-4f2d-873f-524ab9b7751a
 
 	/// Claims whose current lifecycle status is closed.
 	measure 'Closed Claims' = CALCULATE([Total Claims], KEEPFILTERS('Claims'[Claim Status] = "CLOSED"))
 		formatString: #,##0
 		displayFolder: Supporting Measures
+		lineageTag: 05ca5bd0-7185-4207-9f64-410b4d898959
 
 	/// Share of claims currently closed.
 	measure 'Closure Rate' = DIVIDE([Closed Claims], [Total Claims])
 		formatString: 0.0%
 		displayFolder: Leadership KPIs
+		lineageTag: 72fd377f-50a5-4030-82bd-93e10d23acfa
 
 	/// Mean whole-day interval between loss and initial report.
 	measure 'Average Reporting Lag Days' = AVERAGE('Claims'[Reporting Lag Days])
 		formatString: #,##0.0
 		displayFolder: Leadership KPIs
+		lineageTag: 726a915a-9ac2-4ceb-a82a-5b44d30efc90
 
 	/// Distinct claim count for the same date period one year earlier.
 	measure 'Claims Prior Year' = CALCULATE([Total Claims], SAMEPERIODLASTYEAR('Date'[Date]))
 		formatString: #,##0
 		displayFolder: Time Intelligence
+		lineageTag: fc31df47-cd4e-4ccd-8a2d-ee7a6bca8f9b
 
 	/// Percentage change in claim count from the same period one year earlier.
 	measure 'Claims YoY Change' = DIVIDE([Total Claims] - [Claims Prior Year], [Claims Prior Year])
 		formatString: +0.0%;-0.0%;0.0%
 		displayFolder: Time Intelligence
+		lineageTag: ef2be979-a6ce-4193-9603-ee03dae3e8ef
 
 	/// Paid-to-date value for the same date period one year earlier.
 	measure 'Paid Prior Year' = CALCULATE([Total Paid], SAMEPERIODLASTYEAR('Date'[Date]))
 		formatString: £#,##0
 		displayFolder: Time Intelligence
+		lineageTag: e449cd48-61e4-49de-ba6d-0eb08b139ba5
 
 	/// Percentage change in paid-to-date value from the same period one year earlier.
 	measure 'Paid YoY Change' = DIVIDE([Total Paid] - [Paid Prior Year], [Paid Prior Year])
 		formatString: +0.0%;-0.0%;0.0%
 		displayFolder: Time Intelligence
+		lineageTag: ca383bf2-6745-4abe-997e-1730bcf57ae5
 
 	/// Filter-responsive leadership headline naming the product with the largest paid share.
-	measure 'Claims Review Headline' = ```
+	measure 'Claims Review Headline' =
 			VAR _products =
 				TOPN(
 					1,
@@ -69,30 +81,34 @@ table Claims
 			VAR _paid = MAXX(_products, [PaidValue])
 			VAR _share = DIVIDE(_paid, CALCULATE([Total Paid], REMOVEFILTERS('Policy'[Product])))
 			RETURN IF(ISBLANK(_product), "Claims leadership review", _product & " currently drives " & FORMAT(_share, "0%") & " of paid claims")
-			```
 		formatString: General
 		displayFolder: Narrative
+		lineageTag: c8bf3e07-2e57-426f-a910-6bfa7c979853
 
 	/// Screen-reader summary of claim volume in the selected context.
 	measure 'Claims Alt Text' = "There are " & FORMAT([Total Claims], "#,##0") & " claims in the selected period, with " & FORMAT([Open Claims], "#,##0") & " currently open."
 		formatString: General
 		displayFolder: Accessibility
+		lineageTag: a07be612-7730-4a68-acc7-51ca9facc8f3
 
 	/// Screen-reader summary of paid-to-date value in the selected context.
 	measure 'Paid Alt Text' = "Paid-to-date claim value is " & FORMAT([Total Paid], "£#,##0") & ". This is not an incurred or reserve amount."
 		formatString: General
 		displayFolder: Accessibility
+		lineageTag: 30a30401-fc68-43e6-b88e-2c7edd4fd387
 
 	/// Supporting count evaluated by reported date via the inactive relationship.
 	measure 'Total Claims by Reported Date' = CALCULATE([Total Claims], USERELATIONSHIP('Claims'[Reported Date], 'Date'[Date]))
 		formatString: #,##0
-		displayFolder: Supporting Measures
 		isHidden
+		displayFolder: Supporting Measures
+		lineageTag: 7bd22f82-4789-4688-83b1-5b18575f690c
 
 	/// Technical claim identifier retained only for distinct-count calculation.
 	column 'Claim ID'
 		dataType: string
 		isHidden
+		lineageTag: b9077a81-fd10-491b-8662-b113da171c9d
 		summarizeBy: none
 		sourceColumn: Claim ID
 
@@ -100,6 +116,7 @@ table Claims
 	column 'Policy ID'
 		dataType: string
 		isHidden
+		lineageTag: c3bc150d-40f7-4920-ae2c-b3085be17063
 		summarizeBy: none
 		sourceColumn: Policy ID
 
@@ -107,19 +124,26 @@ table Claims
 	column 'Loss Date'
 		dataType: dateTime
 		formatString: dd MMM yyyy
+		lineageTag: 2810c5d5-9af7-45a1-9d5f-017cd454fbc1
 		summarizeBy: none
 		sourceColumn: Loss Date
+
+		annotation UnderlyingDateTimeDataType = Date
 
 	/// Date on which the claim was first reported.
 	column 'Reported Date'
 		dataType: dateTime
 		formatString: dd MMM yyyy
+		lineageTag: 4518f490-8468-4b03-b3ca-127995888930
 		summarizeBy: none
 		sourceColumn: Reported Date
+
+		annotation UnderlyingDateTimeDataType = Date
 
 	/// Current claim lifecycle status.
 	column 'Claim Status'
 		dataType: string
+		lineageTag: 281af4ed-d02a-4216-9888-cfd3299a700b
 		summarizeBy: none
 		sourceColumn: Claim Status
 
@@ -127,6 +151,7 @@ table Claims
 	column 'Paid Amount'
 		dataType: decimal
 		isHidden
+		lineageTag: 10349718-dc79-47c0-a7de-15f090ddf86b
 		summarizeBy: none
 		sourceColumn: Paid Amount
 
@@ -134,20 +159,21 @@ table Claims
 	column 'Reporting Lag Days'
 		dataType: int64
 		isHidden
+		lineageTag: 27dda5ff-86cd-4503-a86b-2e7976af6270
 		summarizeBy: none
 		sourceColumn: Reporting Lag Days
 
 	partition Claims = m
 		mode: import
 		source =
-			let
-				Source = Snowflake.Databases(#"SnowflakeServer", #"SnowflakeWarehouse", [Implementation="2.0"]),
-				Database = Source{[Name=#"SnowflakeDatabase"]}[Data],
-				Schema = Database{[Name=#"SnowflakeSchema", Kind="Schema"]}[Data],
-				ClaimsSource = Schema{[Name="FCT_CLAIMS", Kind="Table"]}[Data],
-				#"Selected Columns" = Table.SelectColumns(ClaimsSource, {"CLAIM_ID", "POLICY_ID", "LOSS_DATE", "REPORTED_DATE", "CLAIM_STATUS", "PAID_AMOUNT"}),
-				#"Renamed Columns" = Table.RenameColumns(#"Selected Columns", {{"CLAIM_ID", "Claim ID"}, {"POLICY_ID", "Policy ID"}, {"LOSS_DATE", "Loss Date"}, {"REPORTED_DATE", "Reported Date"}, {"CLAIM_STATUS", "Claim Status"}, {"PAID_AMOUNT", "Paid Amount"}}),
-				#"Added Reporting Lag" = Table.AddColumn(#"Renamed Columns", "Reporting Lag Days", each Duration.Days([Reported Date] - [Loss Date]), Int64.Type),
-				#"Changed Types" = Table.TransformColumnTypes(#"Added Reporting Lag", {{"Claim ID", type text}, {"Policy ID", type text}, {"Loss Date", type date}, {"Reported Date", type date}, {"Claim Status", type text}, {"Paid Amount", Currency.Type}, {"Reporting Lag Days", Int64.Type}})
-			in
-				#"Changed Types"
+				let
+					Source = Snowflake.Databases(#"SnowflakeServer", #"SnowflakeWarehouse", [Implementation="2.0"]),
+					Database = Source{[Name=#"SnowflakeDatabase"]}[Data],
+					Schema = Database{[Name=#"SnowflakeSchema", Kind="Schema"]}[Data],
+					ClaimsSource = Schema{[Name="FCT_CLAIMS", Kind="Table"]}[Data],
+					#"Selected Columns" = Table.SelectColumns(ClaimsSource, {"CLAIM_ID", "POLICY_ID", "LOSS_DATE", "REPORTED_DATE", "REPORTING_LAG_DAYS", "CLAIM_STATUS", "PAID_AMOUNT"}),
+					#"Renamed Columns" = Table.RenameColumns(#"Selected Columns", {{"CLAIM_ID", "Claim ID"}, {"POLICY_ID", "Policy ID"}, {"LOSS_DATE", "Loss Date"}, {"REPORTED_DATE", "Reported Date"}, {"REPORTING_LAG_DAYS", "Reporting Lag Days"}, {"CLAIM_STATUS", "Claim Status"}, {"PAID_AMOUNT", "Paid Amount"}}),
+					#"Changed Types" = Table.TransformColumnTypes(#"Renamed Columns", {{"Claim ID", type text}, {"Policy ID", type text}, {"Loss Date", type date}, {"Reported Date", type date}, {"Reporting Lag Days", Int64.Type}, {"Claim Status", type text}, {"Paid Amount", Currency.Type}})
+				in
+					#"Changed Types"
+

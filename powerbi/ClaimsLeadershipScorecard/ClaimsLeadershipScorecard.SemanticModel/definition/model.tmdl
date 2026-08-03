@@ -1,17 +1,19 @@
 model Model
 	culture: en-GB
 	defaultPowerBIDataSourceVersion: powerBI_V3
-	sourceQueryCulture: en-GB
 	discourageImplicitMeasures
+	sourceQueryCulture: en-GB
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["Claims","Policy","Date","SnowflakeServer","SnowflakeWarehouse","SnowflakeDatabase","SnowflakeSchema"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_ProTooling = ["DevMode"]
 
 ref table Claims
 ref table Policy
 ref table Date
 
-expression SnowflakeServer = "DBSKDCV-OV11805.snowflakecomputing.com" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
-
-expression SnowflakeWarehouse = "MODERN_INSURANCE_PLATFORM_WH" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
-
-expression SnowflakeDatabase = "PRD_MODERN_INSURANCE_PLATFORM" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
-
-expression SnowflakeSchema = "ANALYTICS" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]

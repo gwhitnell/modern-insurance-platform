@@ -73,10 +73,11 @@ locals {
 resource "snowflake_table" "raw_table" {
   for_each = local.raw_table_matrix
 
-  database = each.value.database
-  schema   = each.value.schema
-  name     = each.value.name
-  comment  = each.value.comment
+  database                    = each.value.database
+  schema                      = each.value.schema
+  name                        = each.value.name
+  comment                     = each.value.comment
+  data_retention_time_in_days = 1
 
   dynamic "column" {
     for_each = each.value.columns

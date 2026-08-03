@@ -4,6 +4,7 @@
 *.tfstate.*
 *.tfplan
 tfplan
+/terraform/logs/
 
 # Sensitive vars
 terraform.tfvars
@@ -12,6 +13,9 @@ terraform.tfvars
 /dbt/target/
 /dbt/logs/
 /dbt/dbt_packages/
+
+# Power BI local caches
+**/.pbi/
 
 # Python
 venv/
