@@ -94,3 +94,27 @@ Suggested first questions:
 - Find customers called Ruby.
 - Look up policy P100123.
 - Show claim CL200126.
+
+## Horizon Catalog
+
+dbt persists model and column descriptions as Snowflake comments, making the
+documentation in `dbt/models/**/schema.yml` searchable in Horizon Catalog.
+
+After both dbt environments and the PRD semantic views exist, run:
+
+1. `08_horizon_catalog.sql` as `ACCOUNTADMIN`.
+2. Open Snowsight and select **Catalog > Explorer**.
+3. Review the PRD `ANALYTICS` objects, their tags, descriptions, and lineage.
+4. Search for `trusted insurance`, `customer personal data`, or
+   `monthly policy performance` to validate discovery metadata.
+
+The script creates a controlled tag vocabulary in
+`PRD_MODERN_INSURANCE_PLATFORM.GOVERNANCE`, marks RAW as source-only, marks the
+PRD marts and semantic views as trusted, and classifies personal-data columns
+on `DIM_CUSTOMER`. It is safe to rerun. Object tagging might require Enterprise
+Edition or higher; if the trial account rejects `CREATE TAG`, retain the dbt
+comments and rerun this script after upgrading.
+
+Tags and comments contain metadata only. Never store customer names, email
+addresses, dates of birth, policy numbers, claim numbers, or other record-level
+values in catalog metadata.

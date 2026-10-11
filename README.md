@@ -320,7 +320,7 @@ You also need:
 
    | Parameter | Default |
    |---|---|
-   | `SnowflakeServer` | `DBSKDCV-OV11805.snowflakecomputing.com` |
+   | `SnowflakeServer` | `<YOUR_SERVER>.snowflakecomputing.com` |
    | `SnowflakeWarehouse` | `MODERN_INSURANCE_PLATFORM_WH` |
    | `SnowflakeDatabase` | `PRD_MODERN_INSURANCE_PLATFORM` |
    | `SnowflakeSchema` | `ANALYTICS` |
