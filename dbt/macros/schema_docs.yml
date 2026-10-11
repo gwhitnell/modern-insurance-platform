@@ -7,5 +7,5 @@ macros:
         type: string
         description: "Schema defined via +schema config."
       - name: node
-        type: object
+        type: any
         description: "The dbt node object being compiled."

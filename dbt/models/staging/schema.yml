@@ -10,49 +10,104 @@ models:
           - not_null
 
       - name: email
-        description: "Normalised email address (lowercase, trimmed)."
+        description: "Normalised email address (lowercase, trimmed). Contains personal data."
+
+      - name: first_name
+        description: "Customer first name. Contains personal data."
+
+      - name: last_name
+        description: "Customer last name. Contains personal data."
 
       - name: created_at_ts
         description: "Parsed customer created timestamp from mixed raw formats."
 
       - name: date_of_birth
-        description: "Parsed date of birth from mixed raw formats."
+        description: "Parsed date of birth from mixed raw formats. Contains sensitive personal data."
+
+      - name: source_system
+        description: "Source system that supplied the customer record."
+
+      - name: ingested_at
+        description: "Timestamp when the raw customer record was ingested."
 
   - name: stg_policies
     description: "Staged policies with type casting from RAW.POLICIES."
     columns:
       - name: policy_id
+        description: "Unique policy identifier from the policy administration system."
         tests: [not_null]
       - name: customer_id
+        description: "Customer identifier used to relate the policy to a customer."
         tests: [not_null]
+      - name: product_code
+        description: "Normalised insurance product code."
+      - name: inception_date
+        description: "Date on which policy cover starts."
+      - name: expiry_date
+        description: "Date on which policy cover ends."
       - name: policy_status
+        description: "Normalised current policy lifecycle status."
         tests:
           - accepted_values:
               arguments:
                 values: ["ACTIVE", "CANCELLED", "LAPSED"]
+      - name: annual_premium
+        description: "Annualised written premium for the policy; not recognised revenue."
+      - name: source_system
+        description: "Source system that supplied the policy record."
+      - name: ingested_at
+        description: "Timestamp when the raw policy record was ingested."
   
   - name: stg_business_events
     description: "Staged business events with parsing and normalisation from RAW.BUSINESS_EVENTS."
     columns:
       - name: event_id
+        description: "Unique identifier for the business event."
         tests: [not_null]
       - name: policy_id
+        description: "Policy affected by the business event."
         tests: [not_null]
+      - name: event_ts
+        description: "Timestamp at which the business event occurred."
       - name: event_type
+        description: "Normalised lifecycle event type."
         tests:
           - accepted_values:
               arguments:
                 values: ["quote", "new_business", "mta", "renewal", "cancellation", "lapse"]
+      - name: channel
+        description: "Distribution channel associated with the event."
+      - name: gross_premium_change
+        description: "Change in written premium caused by the event; not recognised revenue."
+      - name: event_version
+        description: "Source event version used to order repeated event records."
+      - name: source_system
+        description: "Source system that supplied the event."
+      - name: ingested_at
+        description: "Timestamp when the raw event was ingested."
 
   - name: stg_claims
     description: "Staged claims with parsing and normalization from RAW.CLAIMS."
     columns:
       - name: claim_id
+        description: "Unique claim identifier from the claims system."
         tests: [not_null]
       - name: policy_id
+        description: "Policy against which the claim was made."
         tests: [not_null]
+      - name: loss_date
+        description: "Date on which the insured loss occurred."
+      - name: reported_date
+        description: "Date on which the claim was first reported."
       - name: claim_status
+        description: "Normalised current claim lifecycle status."
         tests:
           - accepted_values:
               arguments:
                 values: ["OPEN", "CLOSED", "REJECTED"]
+      - name: paid_amount
+        description: "Claim payments made to date; not incurred loss and does not include outstanding reserves."
+      - name: source_system
+        description: "Source system that supplied the claim record."
+      - name: ingested_at
+        description: "Timestamp when the raw claim record was ingested."
